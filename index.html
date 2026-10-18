@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14213D">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="TSEKmate"><script>document.documentElement.dataset.theme=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"</script>
+<title>TSEKmate</title>
+<style>
+:root{--ink:#0B1530;--blue:#3D5AFE;--on:#fff;--red:#E8483B;--hi:#FFD93D;--grn:#17B26A;--paper:#EEF1FA;--card:#fff;--line:#DDE3F3;--mute:#5B6785;--hero:#0B1530;--sh:0 10px 28px -14px #0b153055}
+:root[data-theme=dark]{--ink:#EAF0FF;--blue:#8EA2FF;--on:#0B1530;--red:#FF7A6E;--grn:#4ADE9B;--paper:#070D1F;--card:#111A33;--line:#243056;--mute:#9AA6C6;--hero:#17224A;--sh:0 10px 28px -14px #000c}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 ui-rounded,"SF Pro Rounded","Avenir Next","Segoe UI Variable","Segoe UI",system-ui,sans-serif;padding-bottom:118px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+header{background:#0B1530e6;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff;position:sticky;top:0;z-index:5;padding-top:env(safe-area-inset-top)}
+header .wrap{display:flex;align-items:center;gap:10px;height:58px}
+.brand{font-weight:800;font-size:22px;letter-spacing:-.03em}.brand b{color:var(--hi)}
+.pill{margin-left:auto;font-size:12px;font-weight:700;padding:5px 11px;border-radius:99px;background:#ffffff1f}
+.pill i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#4FD1A0;margin-right:6px;box-shadow:0 0 0 3px #4fd1a033}
+.pill.off i{background:var(--hi);box-shadow:0 0 0 3px #ffd93d33}
+h1{font-size:clamp(34px,9vw,52px);line-height:1;letter-spacing:-.045em;font-weight:800;margin:0 0 12px}
+h2{font-size:28px;letter-spacing:-.03em;font-weight:800;margin:26px 0 12px}h3{margin:0 0 8px;font-size:17px;letter-spacing:-.01em}
+.mute{color:var(--mute)}
+.hero{position:relative;background:var(--hero);color:#fff;border-radius:28px;padding:34px 24px 26px;margin:16px 0;overflow:hidden;background-image:radial-gradient(#ffffff1c 1.4px,transparent 1.6px);background-size:22px 22px}
+.hero p{color:#c3cdf0;max-width:34ch;margin:0 0 4px}
+.k{position:absolute;width:13px;height:13px;background:#fff;border-radius:2px}
+.k.tl{top:12px;left:12px}.k.tr{top:12px;right:12px}.k.bl{bottom:12px;left:12px}.k.br{bottom:12px;right:12px;box-shadow:inset 0 0 0 4px var(--hero)}
+.bubbles{display:flex;gap:12px;margin:22px 0}
+.bubbles span{width:46px;height:46px;border-radius:50%;border:2.5px solid #8EA2FF;display:grid;place-items:center;font-weight:800;font-size:18px;color:#cdd6ff;animation:pop .5s both;animation-delay:calc(var(--i)*.12s)}
+.bubbles .f{animation:pop .5s .36s both,fill .35s 1s forwards}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+@keyframes fill{to{background:var(--hi);border-color:var(--hi);color:var(--ink);transform:scale(1.08)}}
+@media(prefers-reduced-motion:reduce){.bubbles span,.bubbles .f{animation:none}.bubbles .f{background:var(--hi);border-color:var(--hi);color:var(--ink)}.ring,.cam::after{animation:none}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin:14px 0;box-shadow:var(--sh)}
+.item{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stats .card{margin:0;padding:16px 16px 14px;position:relative;overflow:hidden}
+.stats .card::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:5px;border-radius:0 5px 5px 0;background:var(--blue)}
+.stats .card.g::before{background:var(--grn)}.stats .card.y::before{background:var(--hi)}.stats .card.r::before{background:var(--red)}
+.stats b{display:block;font-size:38px;line-height:1.05;letter-spacing:-.04em}.stats span{font-size:13px}
+.btn{background:var(--blue);color:var(--on);border:0;border-radius:99px;padding:12px 22px;font:inherit;font-weight:800;cursor:pointer;box-shadow:0 8px 18px -8px var(--blue);transition:transform .12s}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:transparent;color:var(--blue);border:2px solid var(--blue);box-shadow:none;padding:10px 20px}
+.btn.del{color:var(--red);border-color:var(--red)}
+.btn.go{background:var(--hi);color:#0B1530;box-shadow:0 10px 22px -8px #ffd93d99}
+.btn.out{background:transparent;color:#fff;border:2px solid #ffffff55;box-shadow:none;padding:10px 20px}
+a.btn{display:inline-block;text-decoration:none;text-align:center}
+.hero .row{margin-top:18px}
+label{display:block;font-size:14px;font-weight:700;margin:10px 0}
+input,select,textarea{display:block;width:100%;margin-top:5px;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);outline:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.row>label{flex:1;min-width:140px;margin:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:7px;margin:12px 0}
+.cell{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);border-radius:12px;padding:5px 0;font:800 17px/1.2 inherit;cursor:pointer;transition:transform .1s}
+.cell:active{transform:scale(.92)}
+.cell small{display:block;font-size:10px;font-weight:600;color:var(--mute)}
+.cell.on{border-color:var(--blue);background:var(--blue);color:var(--on)}.cell.on small{color:inherit}
+ol{padding-left:20px}li{margin:4px 0}
+.seg{display:flex;gap:6px;margin:12px 0}.seg .btn{flex:1;padding-inline:8px}
+.paper{background:#fff;border-radius:6px;box-shadow:0 18px 40px -12px #0b1530aa;line-height:0;max-width:520px;margin:16px auto;overflow:hidden}
+.paper svg{width:100%;height:auto}
+.ring{transform-box:fill-box;transform-origin:center;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.28);opacity:.4}}
+nav{position:fixed;bottom:0;left:0;right:0;pointer-events:none;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+nav .wrap{max-width:480px;display:flex;justify-content:space-around;align-items:center;height:64px;background:var(--card);border:1px solid var(--line);border-radius:26px;box-shadow:0 18px 40px -10px #0b1530aa;pointer-events:auto;padding:0 6px}
+nav a{color:var(--mute);text-decoration:none;font-size:11px;font-weight:800;padding:8px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;border-radius:16px}
+nav svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav a.on{color:var(--blue)}
+nav a.scan{background:var(--blue);color:var(--on);width:66px;height:66px;border-radius:50%;margin-top:-30px;justify-content:center;box-shadow:0 12px 24px -6px var(--blue),0 0 0 6px var(--paper)}
+nav a.scan svg{width:28px;height:28px}
+:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+#toast{position:fixed;left:50%;bottom:108px;transform:translateX(-50%) translateY(8px);background:#0B1530;color:#fff;padding:12px 18px;border-radius:16px;font-weight:700;font-size:14px;opacity:0;pointer-events:none;transition:.25s;max-width:90%;box-shadow:var(--sh)}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.cam{position:relative;background:#000;border-radius:22px;overflow:hidden;margin:12px 0;aspect-ratio:3/4;max-height:70vh;width:100%}
+.cam video{width:100%;height:100%;object-fit:cover;display:block}
+.cam::before{content:'';position:absolute;inset:7% 9%;border:3px dashed #ffffffaa;border-radius:16px;transition:.2s}
+.cam.lk::before{border:3px solid var(--grn);box-shadow:0 0 0 999px #0b153055}
+.cam::after{content:'';position:absolute;left:9%;right:9%;top:7%;height:3px;background:var(--hi);box-shadow:0 0 14px var(--hi);animation:sweep 2.2s ease-in-out infinite alternate}
+.cam.lk::after{display:none}
+@keyframes sweep{to{top:92%}}
+.lock{position:absolute;left:12px;right:12px;bottom:12px;background:#0B1530d9;color:#fff;padding:10px 14px;border-radius:14px;font-size:14px;font-weight:700;text-align:center}
+.lock.ok{background:#17B26Ae6}
+.sc{display:flex;align-items:center;gap:16px;margin-bottom:12px}
+.dial{--pp:0;animation:dial 1.1s .15s cubic-bezier(.2,.8,.2,1) forwards;width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--grn) calc(var(--pp)*1%),var(--line) 0);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;flex:none}
+.dial::before{content:'';position:absolute;inset:9px;border-radius:50%;background:var(--card)}
+.dial b,.dial small{position:relative;line-height:1.1}.dial b{font-size:28px;letter-spacing:-.04em}.dial small{color:var(--mute);font-weight:700}
+.sc h3{font-size:22px;margin:0}
+#rv{width:100%;height:auto;border-radius:12px;background:#fff;display:block;margin-bottom:10px}
+#print{display:none}
+@media print{@page{size:A4;margin:0}body{background:#fff;padding:0}body>*:not(#print){display:none!important}
+#print{display:block}#print svg{display:block;width:210mm;height:297mm;page-break-after:always;break-after:page}}
+.imap{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:6px;margin:10px 0}
+.imap i{font-style:normal;font-weight:800;text-align:center;border-radius:10px;padding:7px 0;font-size:13px}
+.keep{background:#17B26A33;color:var(--grn)}.revise{background:#FFD93D66;color:var(--ink)}.discard{background:#E8483B33;color:var(--red)}
+.tag{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px}
+details.q{border:1px solid var(--line);border-radius:16px;padding:12px 14px;margin:8px 0;background:var(--card)}
+details.q summary{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:700;list-style:none}
+details.q summary::-webkit-details-marker{display:none}
+.bar{height:9px;border-radius:9px;background:var(--line);flex:1;overflow:hidden}.bar i{display:block;height:100%;background:var(--blue);border-radius:9px}.bar.k i{background:var(--grn)}
+.dr{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:14px}.dr b{width:18px}.dr span{width:56px;text-align:right}
+@property --pp{syntax:'<number>';inherits:false;initial-value:0}
+@keyframes dial{to{--pp:var(--p)}}
+:root{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+body{transition:background .35s,color .35s}
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.985)}}
+#app>*{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+#app>:nth-child(2){animation-delay:.06s}#app>:nth-child(3){animation-delay:.12s}#app>:nth-child(4){animation-delay:.18s}#app>:nth-child(5){animation-delay:.24s}#app>:nth-child(6){animation-delay:.3s}#app>:nth-child(n+7){animation-delay:.36s}
+@media(hover:hover){.card{transition:transform .2s,box-shadow .2s}.card:hover{transform:translateY(-3px);box-shadow:0 18px 34px -16px #0b153080}}
+.imap i{animation:pop .4s both;animation-delay:calc(var(--i)*14ms)}
+.bubbles{position:relative}
+.bubbles::after{content:'';position:absolute;top:-10px;bottom:-10px;left:0;width:3px;border-radius:3px;background:var(--hi);box-shadow:0 0 18px 2px var(--hi);animation:scanx 3.4s ease-in-out infinite}
+@keyframes scanx{50%{left:calc(100% - 3px)}}
+.btn.go{animation:glow 2.6s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 12px 34px -4px #ffd93dcc}}
+.tg{background:#ffffff1f;border:0;color:#fff;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;cursor:pointer;padding:0}
+.tg svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tg .sun{display:none}:root[data-theme=dark] .tg .sun{display:block}:root[data-theme=dark] .tg .moon{display:none}
+nav .wrap{position:relative}
+#dp{position:absolute;top:7px;left:0;height:50px;border-radius:18px;background:color-mix(in srgb,var(--blue) 16%,transparent);transition:transform .5s cubic-bezier(.3,1.5,.5,1),width .3s,opacity .2s;pointer-events:none}
+nav a{position:relative;z-index:1}nav svg{transition:transform .3s cubic-bezier(.3,1.7,.5,1)}
+nav a.on svg{transform:translateY(-2px) scale(1.12)}nav a:active svg{transform:scale(.85)}
+.cam .fl{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:2}
+.cam.shot .fl{animation:flash .45s ease-out}
+@keyframes flash{0%{opacity:.9}100%{opacity:0}}
+.cf{position:fixed;width:9px;height:14px;border-radius:2px;z-index:60;pointer-events:none}
+@media(prefers-reduced-motion:reduce){*,::before,::after{animation:none!important;transition:none!important}.dial{--pp:var(--p)}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<svg width="32" height="32" viewBox="0 0 512 512" aria-hidden="true"><circle cx="256" cy="256" r="230" fill="#2B4BDB"/><path d="M170 262l62 62 110-136" fill="none" stroke="#FFD93D" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span class="brand">TSEK<b>mate</b></span><span class="pill" id="pill"></span><button class="tg" data-act="theme" aria-label="Switch between light and dark"><svg class="moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg><svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg></button>
+</div></header>
+<main class="wrap" id="app"></main>
+<nav><div class="wrap"><i id="dp"></i><a href="#home" data-t="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"/></svg>Home</a><a href="#classes" data-t="classes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-4 3-6 6-6s6 2 6 6M16 5a3 3 0 010 6M18 14c2 1 3 3 3 6"/></svg>Classes</a><a href="#scan" data-t="scan" class="scan" aria-label="Scan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4M8 12h8"/></svg></a><a href="#exams" data-t="exams"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6zM9 14l2 2 4-4"/></svg>Exams</a><a href="#settings" data-t="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Settings</a></div></nav>
+<div id="toast" role="status"></div>
+<script type="text/plain" id="gas">
+/* TSEKmate -> Google Sheets receiver. Paste into Extensions > Apps Script, then Deploy > Web app (Execute as: Me, Access: Anyone). */
+function out(o){return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON)}
+function col(n){var s='';while(n>0){var m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26)}return s}
+function safe(v){v=String(v==null?'':v);return /^[=+\-@]/.test(v)?"'"+v:v}
+
+function doGet(){return out({ok:true,app:'TSEKmate',url:SpreadsheetApp.getActiveSpreadsheet().getUrl()})}
+
+function doPost(e){
+  var lock=LockService.getScriptLock();lock.waitLock(20000);
+  try{
+    var d=JSON.parse(e.postData.contents),ss=SpreadsheetApp.getActiveSpreadsheet();
+    if(!d.id||!d.key||!d.key.length)throw new Error('Incomplete data');
+    var name=String(d.exam||'Exam').replace(/[\[\]*?:\/\\]/g,' ').substring(0,90);
+    var sh=ss.getSheetByName(name)||setup(ss,name,d);
+    var n=d.key.length,idc=6+n,last=col(5+n),rows=Math.max(sh.getLastRow()-3,1);
+    var ids=sh.getRange(4,idc,rows,1).getValues(),r=0,i;
+    for(i=0;i<ids.length;i++){if(ids[i][0]===d.id){r=4+i;break}}   /* same paper sent twice = update, never a duplicate */
+    if(!r)r=Math.max(sh.getLastRow()+1,4);
+    var ans=(d.answers||[]).slice(0,n);while(ans.length<n)ans.push('');
+    sh.getRange(r,1,1,idc).setValues([[safe(d.student),'',d.total,'',new Date(d.at||Date.now())].concat(ans,[d.id])]);
+    sh.getRange(r,2).setFormula('=SUMPRODUCT(--(F'+r+':'+last+r+'=F$2:'+last+'$2))');   /* edit an answer cell and the score updates */
+    sh.getRange(r,4).setFormula('=IFERROR(B'+r+'/C'+r+',0)').setNumberFormat('0%');
+    sh.getRange(r,5).setNumberFormat('dd mmm HH:mm');
+    return out({ok:true,url:ss.getUrl()+'#gid='+sh.getSheetId(),row:r});
+  }catch(err){return out({ok:false,error:String(err)})}
+  finally{lock.releaseLock()}
+}
+
+function setup(ss,name,d){
+  var n=d.key.length,sh=ss.insertSheet(name),last=col(5+n),hd=['Student','Score','Total','Percent','Scanned'],i;
+  for(i=1;i<=n;i++)hd.push('Q'+i);hd.push('Paper ID');
+  sh.getRange(1,1,1,hd.length).setValues([hd]).setFontWeight('bold').setBackground('#0B1530').setFontColor('#FFFFFF');
+  sh.getRange(2,1,1,n+6).setValues([['ANSWER KEY','','','',''].concat(d.key,[''])]).setFontWeight('bold').setBackground('#FFF3BF');
+  var f=['% CORRECT BY ITEM','','','',''];
+  for(i=0;i<n;i++){var c=col(6+i);f.push('=IFERROR(SUMPRODUCT(--('+c+'$4:'+c+'$1000='+c+'$2))/COUNTA($A$4:$A$1000),"")')}
+  f.push('');
+  sh.getRange(3,1,1,f.length).setFormulas([f]).setNumberFormat('0%').setFontStyle('italic').setBackground('#E8EEFF');
+  sh.setFrozenRows(3);sh.setFrozenColumns(1);sh.setColumnWidth(1,200);sh.hideColumns(6+n);
+  var rg=sh.getRange('F4:'+last+'1000');
+  sh.setConditionalFormatRules([
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=AND(F4<>"",F4=F$2)').setBackground('#C8F2DC').setRanges([rg]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=AND(F4<>"",F4<>F$2)').setBackground('#FFD6D1').setRanges([rg]).build()]);
+  return sh;
+}
+</script>
+<div id="print" aria-hidden="true"></div>
+<script>
+/* ===== Core helpers ===== */
+const $=s=>document.querySelector(s),L=['','A','B','C','D'];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2));
+let _c={};const cfg={get(){try{return JSON.parse(localStorage.getItem('tsek')||'{}')}catch{return _c}},set(v){_c={...cfg.get(),...v};try{localStorage.setItem('tsek',JSON.stringify(_c))}catch{}}};
+function toast(m){const t=$('#toast');t.textContent=m;t.className='show';clearTimeout(toast.h);toast.h=setTimeout(()=>t.className='',2800)}
+const empty=(t,s)=>`<div class="card mute"><b>${t}</b><br>${s}</div>`;
+
+/* ===== Offline data layer: IndexedDB, with in-memory fallback ===== */
+const S=['classes','exams','sheets','outbox','study'],mem={classes:[],exams:[],sheets:[],outbox:[],study:[]};let _db,mode;
+const open=()=>new Promise((ok,no)=>{const r=indexedDB.open('tsekmate',2);r.onupgradeneeded=()=>S.forEach(s=>r.result.objectStoreNames.contains(s)||r.result.createObjectStore(s,{keyPath:'id'}));r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+const tx=(s,m,f)=>new Promise((ok,no)=>{const t=_db.transaction(s,m),q=f(t.objectStore(s));t.oncomplete=()=>ok(q&&q.result);t.onerror=()=>no(t.error)});
+const idb=async()=>{if(!mode){try{_db=await open();mode='idb'}catch{mode='mem'}pill()}return mode=='idb'};
+const db={
+ async all(s){return await idb()?tx(s,'readonly',o=>o.getAll()):[...mem[s]]},
+ async put(s,v){if(await idb())return tx(s,'readwrite',o=>o.put(v));mem[s]=mem[s].filter(x=>x.id!=v.id).concat(v)},
+ async del(s,id){if(await idb())return tx(s,'readwrite',o=>o.delete(id));mem[s]=mem[s].filter(x=>x.id!=id)},
+ async clear(s){if(await idb())return tx(s,'readwrite',o=>o.clear());mem[s]=[]}
+};
+
+/* ===== Domain logic (Step 4 will build on these) ===== */
+const score=(key,ans)=>ans.filter((a,i)=>a&&a==key[i]).length;
+async function saveSheet(ex,student,answers){
+ const id=uid();
+ await db.put('sheets',{id,examId:ex.id,student,answers,score:score(ex.key,answers),total:ex.n,at:Date.now()});
+ await db.put('outbox',{id,status:'pending',at:Date.now()}); /* waits here until the spreadsheet sync can run */
+}
+function download(name,rows){ /* UTF-8 BOM so Excel opens Filipino names correctly */
+ const csv=rows.map(r=>r.map(v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv'}));
+ a.download=name.replace(/[^\w\- ]+/g,'')+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+/* ===== Answer-sheet engine: one layout, used by preview, print, PDF, and (Step 4) the scanner ===== */
+/*SHEET-START*/
+const SHEET=(()=>{
+ const W=210,H=297,INK='#14213D',BLUE='#2B4BDB',MUTE='#5B6785',MK=8,MG=10,R=2.1,RP=11,Y0=90;
+ function layout(n,o={}){
+  const P=[],add=p=>P.push(p),cols=n/10,X0=20,cw=170/cols,OF=7.6,px=Math.min(8,(cw-OF-R-2.4)/3);
+  const T=(x,y,s,size,w,a,f)=>add({t:'text',x,y,s:String(s),size,w:w||400,a:a||'start',f:f||INK});
+  const geo={n,markers:[],bubbles:[],paper:[]};
+  add({t:'rect',x:0,y:0,w:W,h:H,f:'#fff'});
+  [[MG,MG],[W-MG-MK,MG],[MG,H-MG-MK],[W-MG-MK,H-MG-MK]].forEach(([x,y],i)=>{ /* TL, TR, BL, BR (BR has a white center = orientation) */
+   add({t:'rect',x,y,w:MK,h:MK,f:'#000'});
+   if(i==3)add({t:'rect',x:x+MK*.34,y:y+MK*.34,w:MK*.32,h:MK*.32,f:'#fff'});
+   geo.markers.push({x:x+MK/2,y:y+MK/2});
+  });
+  /* header */
+  add({t:'circle',x:24.5,y:29,r:4.5,f:BLUE});
+  add({t:'line',x1:22.3,y1:29.3,x2:23.9,y2:30.9,s:'#FFD93D',sw:1.1});add({t:'line',x1:23.9,y1:30.9,x2:27,y2:26.9,s:'#FFD93D',sw:1.1});
+  T(31.5,31,'TSEKmate',6.2,800);T(31.5,36,n+'-item answer sheet',2.6,400,'start',MUTE);
+  const fld=(x1,x2,y,lab,v)=>{add({t:'line',x1,y1:y,x2,y2:y,s:INK,sw:.3});T(x1,y+3,lab,2.1,400,'start',MUTE);if(v)T(x1+1,y-1.4,String(v).slice(0,x2-x1>60?60:28),3.2,600)};
+  fld(20,128,52,'Name (Last, First)',o.name);fld(20,70,63,'Section',o.section);fld(78,128,63,'Date');fld(20,128,74,'Exam',o.exam);
+  /* Paper No. block: 2 digits, so a scan knows which student it belongs to */
+  T(136,26,'Paper No.',2.8,700);T(136,29.6,'Shade one digit in each row',2.1,400,'start',MUTE);
+  const pn=o.paperNo==null?-1:o.paperNo;
+  for(let d=0;d<10;d++)T(138.5+d*5,34.6,d,2.2,600,'middle',MUTE);
+  [0,1].forEach(r=>{T(187.5,39.2+r*6.5,r?'ones':'tens',2,400,'start',MUTE);
+   for(let d=0;d<10;d++){const x=138.5+d*5,y=38.5+r*6.5,on=pn>=0&&d==(r?pn%10:Math.floor(pn/10));
+    add({t:'circle',x,y,r:2,f:on?'#000':'#fff',s:BLUE,sw:.35});geo.paper.push({row:r,digit:d,x,y})}});
+  /* how to mark */
+  add({t:'rect',x:136,y:56,w:54,h:20,rx:2,s:BLUE,sw:.3});T(139,61,'How to mark',2.6,700);
+  add({t:'circle',x:143,y:68,r:R,f:'#000'});T(147,68.8,'Right',2.2);
+  add({t:'circle',x:162,y:68,r:R,f:'#fff',s:BLUE,sw:.35});add({t:'line',x1:160.4,y1:69.6,x2:163.6,y2:66.4,s:INK,sw:.4});T(166,68.8,'Tick',2.2);
+  add({t:'circle',x:179,y:68,r:R,f:'#fff',s:BLUE,sw:.35});add({t:'circle',x:179,y:68,r:.7,f:INK});T(183,68.8,'Dot',2.2);
+  T(139,73.4,'Fill the whole bubble, dark and neat.',2,400,'start',MUTE);
+  /* answer grid: 10 rows per column, a small gap after row 5 */
+  const gb=Y0+9*RP+4+R+3;
+  for(let c=0;c<cols;c++){const x=X0+c*cw;
+   if(c%2==0)add({t:'rect',x:x-.5,y:Y0-10,w:cw-.5,h:gb-Y0+10,f:'#F1F4FC',rx:1.5});
+   for(let k=0;k<4;k++)T(x+OF+k*px,Y0-5,'ABCD'[k],3,700,'middle',BLUE);
+   for(let i=0;i<10;i++){const q=c*10+i+1,y=Y0+i*RP+(i>4?4:0);
+    T(x+4.4,y+1.1,q,3.1,700,'end');
+    for(let k=0;k<4;k++){const bx=x+OF+k*px;add({t:'circle',x:bx,y,r:R,f:'#fff',s:BLUE,sw:.35});geo.bubbles.push({q,k,x:bx,y})}}}
+  /* teacher box and scan tips */
+  add({t:'rect',x:20,y:208,w:60,h:34,rx:2,s:INK,sw:.3});T(23,214,'For teacher use',2.6,700);
+  T(23,224,'Score',2.4);add({t:'line',x1:36,y1:224.5,x2:58,y2:224.5,s:INK,sw:.3});T(61,224,'/ '+n,2.4);
+  T(23,235,'Percent',2.4);add({t:'line',x1:40,y1:235.5,x2:58,y2:235.5,s:INK,sw:.3});T(61,235,'%',2.4);
+  add({t:'rect',x:86,y:208,w:104,h:34,rx:2,s:BLUE,sw:.3});T(89,214,'Before you scan',2.6,700);
+  ['Lay the sheet flat on a plain, dark surface.','Keep all four black corner squares inside the camera frame.','Use even light. Avoid shadows across the bubbles.','Hold the phone straight above the paper.'].forEach((t,i)=>{
+   add({t:'circle',x:90,y:219.3+i*5.4,r:.6,f:BLUE});T(92,220+i*5.4,t,2.4)});
+  T(105,268,'Print at 100% (Actual size). Do not choose Fit to page, or the corner squares will shift.',2.2,400,'middle',MUTE);
+  T(105,283.6,'TSEKmate sheet TS-'+n+'   A4   v1',2.2,600,'middle',MUTE);
+  return {items:P,geo};
+ }
+ const q=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ function svg(L,scan){
+  const b=L.items.map(p=>p.t=='rect'?`<rect x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="${p.rx||0}" fill="${p.f||'none'}"${p.s?` stroke="${p.s}" stroke-width="${p.sw||.3}"`:''}/>`
+   :p.t=='circle'?`<circle cx="${p.x}" cy="${p.y}" r="${p.r}" fill="${p.f||'none'}"${p.s?` stroke="${p.s}" stroke-width="${p.sw||.3}"`:''}/>`
+   :p.t=='line'?`<line x1="${p.x1}" y1="${p.y1}" x2="${p.x2}" y2="${p.y2}" stroke="${p.s}" stroke-width="${p.sw||.3}" stroke-linecap="round"/>`
+   :`<text x="${p.x}" y="${p.y}" font-size="${p.size}" font-weight="${p.w}" text-anchor="${p.a=='end'?'end':p.a=='middle'?'middle':'start'}" fill="${p.f}" font-family="Helvetica,Arial,sans-serif">${q(p.s)}</text>`).join('');
+  let ov='';
+  if(scan){const m=L.geo.markers,pts=[m[0],m[1],m[3],m[2]].map(p=>p.x+','+p.y).join(' ');
+   ov=`<polygon points="${pts}" fill="#FFB00014" stroke="#FFB000" stroke-width=".7" stroke-dasharray="2.5 1.5"/>`
+    +m.map(p=>`<circle class="ring" cx="${p.x}" cy="${p.y}" r="8" fill="none" stroke="#FFB000" stroke-width=".9"/>`).join('')
+    +L.geo.bubbles.map(p=>`<circle cx="${p.x}" cy="${p.y}" r=".55" fill="#E8483B"/>`).join('')}
+  return `<svg viewBox="0 0 210 297" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Answer sheet">${b}${ov}</svg>`;
+ }
+ return {layout,svg};
+})();
+/*SHEET-END*/
+
+/* ===== Scanner engine: pure JS, runs fully offline. Input: ImageData-like {data,width,height} ===== */
+/*SCAN-START*/
+const SCAN=(()=>{
+ const SRC=[[14,14],[196,14],[196,283],[14,283]],OFF=[],MARK=.3,FAINT=.45;
+ for(let dx=-1.2;dx<1.21;dx+=.6)for(let dy=-1.2;dy<1.21;dy+=.6)if(dx*dx+dy*dy<=1.5)OFF.push([dx,dy]);
+ function gray(im){const{data:d,width:w,height:h}=im,g=new Uint8Array(w*h);for(let i=0;i<w*h;i++)g[i]=(d[4*i]*77+d[4*i+1]*150+d[4*i+2]*29)>>8;return{g,w,h}}
+ function corners({g,w,h}){
+  const W1=w+1,I=new Float64Array(W1*(h+1)),bin=new Uint8Array(w*h),k=Math.max(8,w/10|0);
+  for(let y=0;y<h;y++){let r=0;for(let x=0;x<w;x++){r+=g[y*w+x];I[(y+1)*W1+x+1]=I[y*W1+x+1]+r}}
+  for(let y=0;y<h;y++){const y0=Math.max(0,y-k),y1=Math.min(h,y+k+1);
+   for(let x=0;x<w;x++){const x0=Math.max(0,x-k),x1=Math.min(w,x+k+1),m=(I[y1*W1+x1]-I[y0*W1+x1]-I[y1*W1+x0]+I[y0*W1+x0])/((x1-x0)*(y1-y0));bin[y*w+x]=g[y*w+x]<m*.7?1:0}}
+  const lab=new Uint8Array(w*h),c=[],st=[];
+  for(let i=0;i<w*h;i++)if(bin[i]&&!lab[i]){let a=0,sx=0,sy=0,x0=w,x1=0,y0=h,y1=0;lab[i]=1;st.length=0;st.push(i);
+   while(st.length){const p=st.pop(),x=p%w,y=p/w|0;a++;sx+=x;sy+=y;x<x0&&(x0=x);x>x1&&(x1=x);y<y0&&(y0=y);y>y1&&(y1=y);
+    for(const q of[x>0?p-1:-1,x<w-1?p+1:-1,y>0?p-w:-1,y<h-1?p+w:-1])if(q>=0&&bin[q]&&!lab[q]){lab[q]=1;st.push(q)}}
+   const bw=x1-x0+1,bh=y1-y0+1,cx=sx/a,cy=sy/a;
+   if(a>w*h*3e-4&&a<w*h*.01&&bw/bh>.6&&bw/bh<1.7&&a/(bw*bh)>.5)c.push({a,x:cx,y:cy,hole:!bin[Math.round(cy)*w+Math.round(cx)]})}
+  if(c.length<4)return null;
+  const pick=f=>c.reduce((b,p)=>f(p)<f(b)?p:b),L=[pick(p=>p.x+p.y),pick(p=>p.y-p.x),pick(p=>-(p.x+p.y)),pick(p=>p.x-p.y)]; /* TL,TR,BR,BL as seen */
+  if(new Set(L).size<4)return null;
+  const ar=L.map(p=>p.a);if(Math.max(...ar)/Math.min(...ar)>3.5)return null;
+  const hs=L.filter(p=>p.hole);if(hs.length!=1)return null; /* the ring marker is the true bottom right: fixes rotation */
+  const k0=L.indexOf(hs[0]);return{pts:[0,1,2,3].map(i=>{const p=L[(i+k0+2)%4];return[p.x,p.y]})};
+ }
+ function homog(src,dst){const A=[],b=[];
+  for(let i=0;i<4;i++){const[x,y]=src[i],[u,v]=dst[i];A.push([x,y,1,0,0,0,-u*x,-u*y]);b.push(u);A.push([0,0,0,x,y,1,-v*x,-v*y]);b.push(v)}
+  for(let i=0;i<8;i++){let p=i;for(let r=i+1;r<8;r++)if(Math.abs(A[r][i])>Math.abs(A[p][i]))p=r;
+   [A[i],A[p]]=[A[p],A[i]];[b[i],b[p]]=[b[p],b[i]];
+   for(let r=0;r<8;r++)if(r!=i){const f=A[r][i]/A[i][i];for(let c=i;c<8;c++)A[r][c]-=f*A[i][c];b[r]-=f*b[i]}}
+  return b.map((v,i)=>v/A[i][i]);
+ }
+ const map=(h,x,y)=>{const d=h[6]*x+h[7]*y+1;return[(h[0]*x+h[1]*y+h[2])/d,(h[3]*x+h[4]*y+h[5])/d]};
+ function read(im,n){
+  const G=gray(im),c=corners(G);
+  if(!c)return{ok:false,why:'Could not find all four black corner squares. Lay the sheet flat and fit the whole page in view.'};
+  const H=homog(SRC,c.pts),geo=SHEET.layout(n).geo,{g,w,h}=G;let out=0;
+  const at=(x,y)=>{let s=0;for(const[dx,dy]of OFF){const[u,v]=map(H,x+dx,y+dy);if(!(u>=0&&v>=0&&u<w-1&&v<h-1)){out++;continue}s+=g[(v|0)*w+(u|0)]}return s/OFF.length};
+  const B=geo.bubbles.map(b=>at(b.x,b.y));
+  if(out>OFF.length*5)return{ok:false,why:'Part of the page is outside the picture. Step back and try again.'};
+  const med=[...B].sort((a,b)=>a-b)[B.length>>1],fills=m=>{const base=Math.max(...m,.8*med);return m.map(v=>Math.max(0,(base-v)/base))};
+  const ans=[],flags=[],fl=[];
+  for(let q=0;q<n;q++){const f=fills(B.slice(q*4,q*4+4)),top=Math.max(...f),i=f.indexOf(top),sec=Math.max(...f.filter((_,j)=>j!=i));let a='',fg=null;
+   if(top<MARK)fg='blank';else if(sec>=MARK&&sec>=.6*top)fg='multi';else{a='ABCD'[i];if(top<FAINT)fg='faint'}
+   ans.push(a);flags.push(fg);fl.push(f)}
+  const dg=r=>{const f=fills(geo.paper.filter(p=>p.row==r).map(p=>at(p.x,p.y))),t=Math.max(...f);return t>=MARK?f.indexOf(t):null};
+  const t=dg(0),o=dg(1),pn=t!=null&&o!=null&&t*10+o>0?t*10+o:null;
+  const rect=s=>{const W=210*s|0,Hh=297*s|0,d=new Uint8ClampedArray(W*Hh*4);
+   for(let y=0;y<Hh;y++)for(let x=0;x<W;x++){const[u,v]=map(H,x/s,y/s),i=(y*W+x)*4,p=u>=0&&v>=0&&u<w&&v<h?g[(v|0)*w+(u|0)]:60;d[i]=d[i+1]=d[i+2]=p;d[i+3]=255}
+   return{data:d,width:W,height:Hh}};
+  return{ok:true,ans,flags,fills:fl,pn,geo,rect};
+ }
+ return{gray,corners,read};
+})();
+/*SCAN-END*/
+
+/* ===== Camera ===== */
+const cam={s:null,t:0,n:0,
+ async on(){try{cam.s=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1920},height:{ideal:1080}}});
+  const v=$('#vid');v.srcObject=cam.s;await v.play();$('#snap').disabled=false;cam.loop()}catch{toast('Camera is blocked. Allow camera access, or choose a photo instead.')}},
+ stop(){clearInterval(cam.t);if(cam.s)cam.s.getTracks().forEach(t=>t.stop());cam.s=null},
+ frame(max){const v=$('#vid'),k=Math.min(1,max/Math.max(v.videoWidth,v.videoHeight)),c=document.createElement('canvas');
+  c.width=v.videoWidth*k|0;c.height=v.videoHeight*k|0;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(v,0,0,c.width,c.height);return x.getImageData(0,0,c.width,c.height)},
+ loop(){clearInterval(cam.t);cam.n=0;cam.t=setInterval(()=>{const v=$('#vid'),l=$('#lock');if(!v||!v.videoWidth)return;
+  const c=SCAN.corners(SCAN.gray(cam.frame(360)));cam.n=c?cam.n+1:0;
+  const cm=document.querySelector('.cam');cm&&cm.classList.toggle('lk',!!c);if(c&&cam.n==1){navigator.vibrate&&navigator.vibrate(25);beep(880)}
+  if(l){l.className='lock'+(c?' ok':'');l.textContent=c?'Locked on. Hold steady, capturing...':'Looking for the four corner squares...'}
+  if(cam.n>=3){cam.n=0;A.snap()}},350)}
+};
+let scn=null;
+async function process(im){
+ const fx=document.querySelector('.cam');if(fx){fx.classList.remove('shot');void fx.offsetWidth;fx.classList.add('shot')}
+ const ex=(await db.all('exams')).find(e=>e.id==$('#se').value);if(!ex)return toast('Pick an exam first.');
+ const cl=(await db.all('classes')).find(c=>c.id==ex.classId),t0=performance.now(),r=SCAN.read(im,ex.n),ms=Math.round(performance.now()-t0);
+ if(!r.ok){toast(r.why);if(cam.s)cam.loop();return}
+ clearInterval(cam.t);
+ scn={ex,r,cl,ms,raw:[...r.ans],truth:[...r.ans],ans:[...r.ans],ok:new Set(),im:r.rect(2.4),stu:r.pn&&cl&&cl.students[r.pn-1]||''};showRev();
+}
+function showRev(){
+ const{ex,cl,r,ans}=scn,need=ans.map((a,i)=>[i,r.flags[i]]).filter(([i,f])=>(f=='multi'||f=='faint')&&!scn.ok.has(i)),
+  blanks=ans.map((a,i)=>a?0:i+1).filter(Boolean),sc=score(ex.key,ans),pc=Math.round(sc/ex.n*100);
+ const btn=(i,v,t)=>`<button class="cell ${ans[i]==v&&v?'on':''}" style="width:40px" data-act="fix" data-q="${i}" data-v="${v}">${t}</button>`;
+ $('#rev').innerHTML=`<div class="card"><div class="sc"><div class="dial" style="--p:${pc}"><b>${sc}</b><small>of ${ex.n}</small></div><div><h3>${pc>=90?'Excellent work':pc>=75?'Solid score':pc>=50?'Passing':'Needs review'}</h3><span class="mute">${pc}% correct</span></div></div><canvas id="rv"></canvas>
+ <label>Student<select id="stu"><option value="">Choose a student</option>${(cl?cl.students:[]).map(x=>`<option ${x==scn.stu?'selected':''}>${esc(x)}</option>`).join('')}</select></label>
+ <p class="mute">${r.pn?`Paper No. ${r.pn} was read from the sheet.`:'No Paper No. was shaded, so choose the student.'} Green rings are correct, red are wrong, and a dashed green ring shows the right answer.</p>
+ ${need.length?`<h3>Check ${need.length} mark${need.length>1?'s':''}</h3>`+need.map(([i,f])=>`<div class="item"><b>${i+1}</b><span class="mute">${f=='multi'?'two marks':'faint mark'}</span><span>${'ABCD'.split('').map(c=>btn(i,c,c)).join('')}${btn(i,'','–')}</span></div>`).join(''):'<p class="mute">Every mark was read clearly.</p>'}
+ ${blanks.length?`<p class="mute">Left blank: ${blanks.join(', ')}</p>`:''}
+ ${cfg.get().ev?`<h3>Verify against the paper</h3><p class="mute">Tap an item to set what is really marked on the paper. Highlighted items differ from the scan.</p><div class="grid">${scn.truth.map((t,i)=>`<button class="cell ${t!==scn.raw[i]?'on':''}" data-act="truth" data-i="${i}"><small>${i+1}</small>${t||'·'}</button>`).join('')}</div>`:''}
+ <div class="row"><button class="btn" data-act="saveScan">Save and scan next</button><button class="btn ghost" data-act="discard">Retake</button></div></div>`;
+ drawRev();
+}
+function drawRev(){
+ const{ex,r,ans,im}=scn,s=2.4,c=$('#rv'),x=c.getContext('2d');c.width=im.width;c.height=im.height;x.putImageData(new ImageData(im.data,im.width,im.height),0,0);x.lineWidth=3;
+ r.geo.bubbles.forEach(b=>{const L='ABCD'[b.k],a=ans[b.q-1],f=r.flags[b.q-1],key=ex.key[b.q-1],open=(f=='multi'||f=='faint')&&!scn.ok.has(b.q-1);
+  const ring=(col,dash)=>{x.setLineDash(dash?[5,4]:[]);x.strokeStyle=col;x.beginPath();x.arc(b.x*s,b.y*s,3.2*s,0,7);x.stroke()};
+  if(a==L||(open&&f=='multi'&&r.fills[b.q-1][b.k]>=.3))ring(open?'#FFB000':a==key?'#1F9D6E':'#E8483B');
+  else if(L==key&&a!=key&&!open)ring('#1F9D6E',1)});
+}
+
+/* ===== Item-analysis engine: difficulty, discrimination (upper/lower 27%), distractors, KR-20 ===== */
+/*ITEM-START*/
+const ITEM=(()=>{
+ const LET=['A','B','C','D'];
+ function analyze(key,papers){
+  const N=papers.length,n=key.length;if(N<2)return null;
+  const tot=papers.map(a=>a.reduce((s,x,i)=>s+(x&&x==key[i]?1:0),0)),
+   ord=tot.map((_,i)=>i).sort((a,b)=>tot[b]-tot[a]||a-b),k=Math.max(1,Math.round(.27*N)),up=ord.slice(0,k),lo=ord.slice(N-k),
+   mean=tot.reduce((a,b)=>a+b,0)/N,vr=tot.reduce((a,t)=>a+(t-mean)**2,0)/N;let pq=0;
+  const items=key.map((kc,i)=>{
+   const cnt={A:0,B:0,C:0,D:0,'':0};papers.forEach(a=>cnt[a[i]||'']++);
+   const p=cnt[kc]/N,u=up.filter(j=>papers[j][i]==kc).length,l=lo.filter(j=>papers[j][i]==kc).length,D=(u-l)/k;pq+=p*(1-p);
+   const dead=LET.filter(x=>x!=kc&&cnt[x]/N<.05),bad=LET.find(x=>x!=kc&&up.filter(j=>papers[j][i]==x).length>u),why=[];
+   if(D<0)why.push('Stronger students did worse on this item than weaker ones.');
+   else if(D<.2)why.push('Weak discrimination (D under 0.20).');
+   if(bad)why.push('More top scorers chose '+bad+' than the key '+kc+'. Check the answer key.');
+   if(p<.25)why.push('Very hard: under 25% answered correctly.');
+   if(p>.85)why.push('Very easy: over 85% answered correctly.');
+   if(dead.length)why.push('Nobody chose '+dead.join(', ')+', so '+(dead.length>1?'those options do':'that option does')+' not distract.');
+   const d=D<0||(bad&&D<.1)?'discard':(D<.2||p<.25||p>.85||dead.length>1)?'revise':'keep';
+   return{q:i+1,key:kc,p,D,cnt,d,why,fd:3-dead.length}});
+  const c={keep:0,revise:0,discard:0};items.forEach(x=>c[x.d]++);
+  return{N,n,k,tot,mean,sd:Math.sqrt(vr),kr20:n>1&&vr>0?n/(n-1)*(1-pq/vr):null,items,c};
+ }
+ function compare(key,reads,truths){const a=analyze(key,reads),b=analyze(key,truths),f=x=>x.toFixed(2),m=g=>a.items.filter((x,i)=>g(x,b.items[i])).length;
+  return{a,b,n:key.length,dia:m((x,y)=>f(x.p)==f(y.p)),disa:m((x,y)=>f(x.D)==f(y.D)),dea:m((x,y)=>x.fd==y.fd)}}
+ return{analyze,compare};
+})();
+/*ITEM-END*/
+
+/* ===== Study statistics: paired t-test (exact p via incomplete beta) and SUS scoring ===== */
+/*STAT-START*/
+const STAT=(()=>{
+ const lg=x=>{const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,.1208650973866179e-2,-.5395239384953e-5];let y=x,t=x+5.5,s=1.000000000190015;t-=(x+.5)*Math.log(t);for(const k of c)s+=k/++y;return -t+Math.log(2.5066282746310005*s/x)};
+ const cf=(a,b,x)=>{const F=v=>Math.abs(v)<1e-30?1e-30:v;let qab=a+b,qap=a+1,qam=a-1,c=1,d=1/F(1-qab*x/qap),h=d;
+  for(let m=1;m<=200;m++){const m2=2*m;let aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1/F(1+aa*d);c=F(1+aa/c);h*=d*c;
+   aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1/F(1+aa*d);c=F(1+aa/c);const de=d*c;h*=de;if(Math.abs(de-1)<3e-12)break}return h};
+ const bi=(a,b,x)=>{if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(lg(a+b)-lg(a)-lg(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*cf(a,b,x)/a:1-bt*cf(b,a,1-x)/b};
+ const pairT=d=>{const n=d.length,m=d.reduce((a,b)=>a+b,0)/n,sd=Math.sqrt(d.reduce((a,x)=>a+(x-m)**2,0)/(n-1)),t=m/(sd/Math.sqrt(n)),df=n-1;
+  return{n,m,sd,t,df,p:sd?bi(df/2,.5,df/(df+t*t)):0,dz:m/sd}};
+ const sus=a=>a.slice(0,10).reduce((s,v,i)=>s+(i%2?5-v:v-1),0)*2.5;
+ return{pairT,sus};
+})();
+/*STAT-END*/
+
+/* ===== Offline readiness and install ===== */
+let ip=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ip=e});
+async function ready(){
+ const sw=!!(navigator.serviceWorker&&navigator.serviceWorker.controller),app=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,
+  keep=navigator.storage&&navigator.storage.persisted?await navigator.storage.persisted():false;
+ return[[isSecureContext,'Secure connection (HTTPS)','Needed for the camera and offline mode. Open the https:// link.'],
+  [sw,'Offline files saved','Open the app once with internet, then reload.'],
+  [app,'Added to home screen','Opens full screen like an app, and helps the phone keep your data.'],
+  [keep,'Data protected from cleanup','Add the app to your home screen so the phone keeps your data.'],
+  [!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia),'Camera available','Allow camera access when asked.']];
+}
+
+/* ===== Polish: theme, sound, confetti, motion helpers ===== */
+const calm=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function applyTheme(){const t=cfg.get().theme||'Auto';document.documentElement.dataset.theme=t=='Dark'||(t=='Auto'&&matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light'}
+let AC;function beep(f,d=.09){if(cfg.get().snd===false)return;try{AC=AC||new(window.AudioContext||webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.09,AC.currentTime);g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+d);o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch{}}
+function burst(){if(calm())return;const col=['#FFD93D','#3D5AFE','#17B26A','#E8483B','#ffffff'];
+ for(let i=0;i<38;i++){const e=document.createElement('i'),a=-Math.random()*Math.PI,v=140+Math.random()*260,x=Math.cos(a)*v,y=Math.sin(a)*v;
+  e.className='cf';e.style.cssText='left:50%;top:62%;background:'+col[i%5];document.body.appendChild(e);
+  e.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:`translate(${x}px,${y-60}px) rotate(${Math.random()*540}deg)`,opacity:1,offset:.5},{transform:`translate(${x*1.15}px,${y+300}px) rotate(900deg)`,opacity:0}],{duration:1300+Math.random()*600,easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish=()=>e.remove()}}
+function movePill(){const a=document.querySelector('nav a.on'),p=$('#dp');if(!p)return;if(!a||a.classList.contains('scan')){p.style.opacity=0;return}p.style.opacity=1;p.style.width=a.offsetWidth+'px';p.style.transform='translateX('+a.offsetLeft+'px)'}
+function countUp(){if(calm())return;document.querySelectorAll('.stats b').forEach(b=>{const m=b.textContent.match(/^(\d+(?:\.\d+)?)(.*)$/);if(!m)return;const to=+m[1],dec=(m[1].split('.')[1]||'').length,t0=performance.now();
+ const f=t=>{const k=Math.min(1,(t-t0)/800),e=1-Math.pow(1-k,3);b.textContent=(to*e).toFixed(dec)+m[2];if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)})}
+
+/* ===== Views ===== */
+const V={},sh={n:40,scan:false};let draft={n:40,key:Array(40).fill('')};
+const grid=()=>draft.key.map((k,i)=>`<button class="cell ${k?'on':''}" data-act="cell" data-i="${i}"><small>${i+1}</small>${k||'·'}</button>`).join('');
+const stat=(n,l,c='')=>`<div class="card ${c}"><b>${n}</b><span class="mute">${l}</span></div>`;
+
+V.home=async()=>{
+ const [c,e,s,o]=await Promise.all(S.map(x=>db.all(x))),pend=o.filter(x=>x.status=='pending').length,last=e.sort((a,b)=>b.at-a.at)[0];
+ return `<section class="hero"><i class="k tl"></i><i class="k tr"></i><i class="k bl"></i><i class="k br"></i>
+ <h1>Tsek the whole stack. No signal needed.</h1>
+ <p>Scan, score, and analyze multiple-choice tests on your own phone, then send the results straight to your spreadsheet.</p>
+ <div class="bubbles" aria-hidden="true">${['A','B','C','D'].map((l,i)=>`<span style="--i:${i}"${l=='C'?' class="f"':''}>${l}</span>`).join('')}</div>
+ <div class="row"><a class="btn go" href="#scan">Scan a paper</a><a class="btn out" href="#sheets">Print sheets</a></div></section>
+ <div class="stats">${stat(s.length,'Papers checked','g')}${stat(Math.round(s.length*1.5),'Minutes saved (est. 1.5 per paper)','y')}${stat(e.length,'Exams')}${stat(pend,'Waiting to sync',pend?'r':'')}</div>
+ <div class="card"><h3>Answer sheets</h3><p class="mute">Print sheets for 40, 50, or 60 items, with corner squares the scanner locks onto and a Paper No. for every student.</p><a class="btn" href="#sheets">Open answer sheets</a></div>
+ <div class="card"><h3>Your spreadsheet</h3>
+ <p class="mute">${pend?`${pend} paper${pend==1?'':'s'} waiting. They send by themselves when you have signal.`:'Every checked paper goes to your Google Sheet by itself, with scores that update live. Excel users can download any exam as a file.'}</p>
+ <div class="row"><button class="btn" data-act="sync">${pend?`Send ${pend} now`:'Send to Google Sheets'}</button>${cfg.get().sheet?`<a class="btn ghost" href="${esc(cfg.get().sheet)}" target="_blank" rel="noopener">Open spreadsheet</a>`:''}
+ <button class="btn ghost" data-act="exportExam" data-id="${last?last.id:''}">Download for Excel</button></div></div>
+ <div class="card"><h3>Research tools</h3><p class="mute">Measure scan accuracy (RRA, SCA, DIA, DISA, DEA) and teacher acceptability for your study, then export to Excel.</p><a class="btn ghost" href="#study">Open research tools</a></div>
+ <div class="card"><h3>Just exploring?</h3><p class="mute">Load a ready-made class, exam, and 8 checked papers to see how everything fits together.</p>
+ <button class="btn ghost" data-act="seed">Load sample class</button></div>`;
+};
+V.classes=async()=>{
+ const cl=await db.all('classes');
+ return `<h2>Classes</h2><div class="card"><h3>New class</h3>
+ <label>Class name<input id="cn" placeholder="Grade 8 – Sampaguita"></label>
+ <label>Students, one per line (Last, First)<textarea id="cs" rows="5"></textarea></label>
+ <button class="btn" data-act="addClass">Save class</button></div>`+
+ (cl.map(c=>`<div class="card item"><div><b>${esc(c.name)}</b><div class="mute">${c.students.length} students</div></div><button class="btn ghost del" data-act="delClass" data-id="${c.id}">Delete</button></div>`).join('')||empty('No classes yet','Save your first class above to get started.'));
+};
+V.exams=async()=>{
+ const [cl,ex,sh]=await Promise.all([db.all('classes'),db.all('exams'),db.all('sheets')]);
+ return `<h2>Exams</h2><a class="btn ghost" href="#sheets">Print answer sheets</a><div class="card"><h3>New exam</h3>
+ <label>Title<input id="et" placeholder="1st Term Exam – Science 8"></label>
+ <div class="row"><label>Class<select id="ec">${cl.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')||'<option value="">Add a class first</option>'}</select></label>
+ <label>Items<select id="ei" data-act="items">${[40,50,60].map(n=>`<option ${n==draft.n?'selected':''}>${n}</option>`).join('')}</select></label></div>
+ <p class="mute">Answer key: tap an item to cycle A, B, C, D.</p><div class="grid" id="grid">${grid()}</div>
+ <button class="btn" data-act="saveExam">Save exam</button></div>`+
+ (ex.sort((a,b)=>b.at-a.at).map(x=>`<div class="card item"><div><b>${esc(x.title)}</b><div class="mute">${x.n} items, ${sh.filter(s=>s.examId==x.id).length} papers checked</div></div><div class="row" style="margin:0"><a class="btn ghost" href="#analysis/${x.id}">Analyze</a><button class="btn ghost" data-act="exportExam" data-id="${x.id}">Excel</button></div></div>`).join('')||empty('No exams yet','Set an answer key above and save it.'));
+};
+V.sheets=async()=>{
+ const [cl,ex]=await Promise.all([db.all('classes'),db.all('exams')]);
+ return `<h2>Answer sheets</h2>
+ <p class="mute">Print these on plain A4 paper. The four black squares tell TSEKmate exactly where the page is, even when the photo is tilted.</p>
+ <div class="seg">${[40,50,60].map(n=>`<button class="btn ${n==sh.n?'':'ghost'}" data-act="shn" data-n="${n}">${n} items</button>`).join('')}</div>
+ <div class="paper">${SHEET.svg(SHEET.layout(sh.n),sh.scan)}</div>
+ <div class="row"><button class="btn ghost" data-act="shscan">${sh.scan?'Hide':'Show'} scanner view</button>
+ <button class="btn" data-act="printSheet">Print this sheet</button>
+ <a class="btn ghost" href="TSEKmate-sheet-${sh.n}.pdf" download>Download PDF</a></div>
+ ${sh.scan?`<p class="mute">Amber frame: the four corners the scanner finds first. The square with a white center is the bottom right, so the app can tell if the page is upside down. Red dots: the ${sh.n*4} spots it reads.</p>`:''}
+ <div class="card"><h3>Print one sheet per student</h3>
+ <p class="mute">Each sheet arrives with the student's name written in and their Paper No. already shaded. Paper No. is the student's place in the class list, so every scan finds its owner.</p>
+ <div class="row"><label>Class<select id="pc">${cl.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')||'<option value="">Add a class first</option>'}</select></label>
+ <label>Exam<select id="pe"><option value="">No exam (use ${sh.n} items)</option>${ex.map(x=>`<option value="${x.id}">${esc(x.title)} (${x.n})</option>`).join('')}</select></label></div>
+ <button class="btn" data-act="printClass">Print class set</button></div>`;
+};
+const st={tab:'acc',tam:Array(24).fill(0)},pct=(a,b)=>b?(a/b*100).toFixed(2)+'%':'n/a',hit=r=>r.read.filter((a,i)=>a===r.truth[i]).length;
+const LV=v=>v>=95?'Very high':v>=90?'High':v>=80?'Moderate':'Low',VI=m=>m>=4.21?'Strongly Agree':m>=3.41?'Agree':m>=2.61?'Neutral':m>=1.81?'Disagree':'Strongly Disagree';
+const TAM=[['Perceived Ease of Use','PEOU',['Learning to use TSEKmate was easy for me.','Scanning and checking papers with TSEKmate is clear and understandable.','I find TSEKmate easy to use.']],
+ ['Perceived Usefulness','PU',['TSEKmate helps me check papers faster.','TSEKmate improves the accuracy of my scoring.','TSEKmate helps me judge the quality of my test items.']],
+ ['Attitude Toward Using','ATU',['Using TSEKmate to check papers is a good idea.','I like the idea of scanning papers with my phone.','I have a positive feeling about using TSEKmate.']],
+ ['Behavioral Intention to Use','BI',['I intend to use TSEKmate for my future tests.','I would recommend TSEKmate to other teachers.','I plan to use TSEKmate in the coming grading period.']],
+ ['Actual Use / Usage Intention','AU',['I would use TSEKmate regularly to check papers.','I would use TSEKmate for most of my multiple-choice tests.','I would keep using TSEKmate even when there is no internet.']],
+ ['System Quality','SQ',['TSEKmate runs smoothly, without errors or crashes.','TSEKmate works reliably without an internet connection.','TSEKmate responds quickly when scanning.']],
+ ['Information Quality','IQ',['The scores TSEKmate produces are accurate.','The item-analysis results are clear and easy to understand.','The information from TSEKmate is useful for improving my tests.']],
+ ['User Satisfaction','US',['I am satisfied with TSEKmate.','TSEKmate meets my needs as a teacher.','TSEKmate is better than how I check papers now.']]];
+const keyOf=(r,ex)=>r.key||(ex.find(e=>e.id==r.examId)||{}).key,tamMeans=R=>TAM.map((g,k)=>R.length?R.reduce((a,r)=>a+(r.a[k*3]+r.a[k*3+1]+r.a[k*3+2])/3,0)/R.length:0);
+function agree(R,ex){const by={},rows=[],T={dia:0,disa:0,dea:0,n:0};R.forEach(r=>(by[r.examId]=by[r.examId]||[]).push(r));
+ for(const rs of Object.values(by)){const key=keyOf(rs[0],ex);if(!key||rs.length<6)continue;const c=ITEM.compare(key,rs.map(r=>r.read),rs.map(r=>r.truth));
+  T.dia+=c.dia;T.disa+=c.disa;T.dea+=c.dea;T.n+=c.n;rows.push({t:(ex.find(e=>e.id==rs[0].examId)||{}).title||'Exam',sheets:rs.length,key,c})}
+ return{rows,T}}
+const ST={
+ acc(R,ex){
+  R=R.filter(r=>r.kind=='acc');
+  if(!R.length)return empty('No sheets logged yet','Turn on Study mode in the Scanner, scan a sheet, and verify it against the paper. Each saved sheet is logged here.');
+  const R2=R.filter(r=>keyOf(r,ex)),tot=R.reduce((a,r)=>a+r.n,0),ok=R.reduce((a,r)=>a+hit(r),0),fin=R.reduce((a,r)=>a+r.final.filter((x,i)=>x===r.truth[i]).length,0),
+   sca=R2.filter(r=>score(keyOf(r,ex),r.read)==score(keyOf(r,ex),r.truth)).length,scF=R2.filter(r=>score(keyOf(r,ex),r.final)==score(keyOf(r,ex),r.truth)).length,A=agree(R,ex);
+  const T=(c,n,a,b,u)=>stat(pct(a,b),`${c}: ${n}. ${a} of ${b} ${u}${b?' ('+LV(a/b*100)+')':''}`,b&&a/b>=.95?'g':b&&a/b<.8?'r':'y');
+  const grp=(t,f)=>{const m={};R.forEach(r=>{const g=m[f(r)]=m[f(r)]||{s:0,a:0,c:0};g.s++;g.a+=r.n;g.c+=hit(r)});
+   return `<div class="card"><h3>${t}</h3>${Object.entries(m).map(([k,g])=>`<div class="item"><span>${esc(k)}</span><span class="mute">${g.s} sheet${g.s>1?'s':''}</span><b>${pct(g.c,g.a)}</b></div>`).join('')}</div>`};
+  return `<div class="stats">${T('RRA','Response Recognition Accuracy',ok,tot,'responses')}${T('SCA','Score Computation Accuracy',sca,R2.length,'scores')}${T('DIA','Difficulty Index Accuracy',A.T.dia,A.T.n,'items')}${T('DISA','Discrimination Index Accuracy',A.T.disa,A.T.n,'items')}${T('DEA','Distractor Efficiency Accuracy',A.T.dea,A.T.n,'items')}${stat(Math.round(R.reduce((a,r)=>a+r.ms,0)/R.length)+' ms','Average read time per sheet')}</div>
+  <p class="mute">${R.length} sheets logged. After the teacher confirms flagged marks, RRA is ${pct(fin,tot)} and SCA is ${pct(scF,R2.length)}. ${A.rows.length?'':'DIA, DISA, and DEA need 6 or more sheets of one exam.'}</p>
+  ${A.rows.length?`<div class="card"><h3>Item analysis: scan versus verified answers</h3>${A.rows.map(x=>`<div class="item"><span>${esc(x.t)}</span><span class="mute">${x.sheets} sheets</span><b>DIA ${x.c.dia}/${x.c.n} | DISA ${x.c.disa}/${x.c.n} | DEA ${x.c.dea}/${x.c.n}</b></div>`).join('')}</div>`:''}
+  ${grp('RRA by lighting',r=>r.light)}${grp('RRA by phone',r=>r.device)}${grp('RRA by mark quality',r=>r.marks)}${grp('RRA by test length',r=>r.n+' items')}
+  <details class="q"><summary>Formulas used</summary><p class="mute"><b>RRA</b> = Correctly Recognized Responses / Total Responses x 100<br><b>SCA</b> = Correctly Computed Scores / Total Scores x 100<br><b>DIA</b> = Matching Difficulty Index Values / Total Items x 100<br><b>DISA</b> = Matching Discrimination Index Values / Total Items x 100<br><b>DEA</b> = Matching Distractor Efficiency Results / Total Items x 100<br><br>Each scan is compared with the human-verified answers. A score is correct when the scanned score equals the verified score. Difficulty and discrimination values match when equal to 2 decimal places. A distractor efficiency result matches when the same number of distractors are working, meaning chosen by at least 5% of students. Descriptors: 95% and above very high, 90 to 94.99 high, 80 to 89.99 moderate, below 80 low.</p></details>
+  <div class="row"><button class="btn" data-act="exportStudy" data-k="acc">Download sheet log</button><button class="btn ghost" data-act="exportStudy" data-k="items">Download item comparison</button></div>`},
+ tam(R){
+  R=R.filter(r=>r.kind=='tam');const M=tamMeans(R),all=M.reduce((a,b)=>a+b,0)/8;
+  return `<div class="card"><h3>Teacher acceptability survey</h3><p class="mute">5 Strongly Agree, 4 Agree, 3 Neutral, 2 Disagree, 1 Strongly Disagree.</p>
+  ${TAM.map(([n,c,q],g)=>`<h3 style="margin-top:20px">${n}</h3>`+q.map((t,j)=>`<p style="margin:12px 0 6px">${t}</p><div class="grid" style="grid-template-columns:repeat(5,1fr)">${[1,2,3,4,5].map(v=>`<button class="cell ${st.tam[g*3+j]==v?'on':''}" data-act="tamAns" data-i="${g*3+j}" data-v="${v}">${v}</button>`).join('')}</div>`).join('')).join('')}
+  <label>Respondent code (optional)<input id="sr" placeholder="T01"></label><label>What should be improved?<textarea id="sc" rows="3"></textarea></label>
+  <button class="btn" data-act="tamSave">Save response</button></div>`+(R.length?`<div class="card"><h3>Results from ${R.length} teacher${R.length>1?'s':''}</h3>
+  ${TAM.map(([n],k)=>`<div class="item"><span>${n}</span><span class="mute">${VI(M[k])}</span><b>${M[k].toFixed(2)}</b></div>`).join('')}
+  <div class="item" style="border-top:1px solid var(--line);margin-top:8px;padding-top:8px"><b>Overall acceptability</b><span class="mute">${VI(all)}</span><b>${all.toFixed(2)}</b></div></div>
+  <button class="btn" data-act="exportStudy" data-k="tam">Download survey responses</button>`:'')},
+ enh(R){
+  const A=R.filter(r=>r.kind=='acc'),Tm=R.filter(r=>r.kind=='tam'),pri=[],cond=[];
+  if(Tm.length)tamMeans(Tm).map((m,k)=>[m,TAM[k][0]]).sort((a,b)=>a[0]-b[0]).slice(0,3).forEach(([m,n])=>pri.push(`${n}: mean ${m.toFixed(2)} (${VI(m)}). Rated lowest by teachers.`));
+  [['Lighting',r=>r.light],['Phone',r=>r.device],['Marks',r=>r.marks]].forEach(([t,f])=>{const m={};A.forEach(r=>{const g=m[f(r)]=m[f(r)]||[0,0];g[0]+=hit(r);g[1]+=r.n});Object.entries(m).forEach(([k,[a,b]])=>cond.push([a/b*100,t+': '+k]))});
+  cond.sort((a,b)=>a[0]-b[0]).slice(0,3).forEach(([v,n])=>pri.push(`${n}: recognition accuracy ${v.toFixed(2)}%. Lowest condition tested.`));
+  return `<div class="card"><h3>Where to improve first</h3>${pri.length?`<ol>${pri.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`:'<p class="mute">Log accuracy sheets and teacher responses first.</p>'}<p class="mute">These are prompts for your discussion of results, not conclusions.</p></div>
+  <h3>Teachers' suggestions</h3>${Tm.filter(r=>r.comment).map(r=>`<div class="card"><b>${esc(r.role||'Teacher')}</b><p>${esc(r.comment)}</p></div>`).join('')||'<p class="mute">No comments yet.</p>'}`}
+};
+V.study=async()=>{
+ const [rec,ex]=await Promise.all([db.all('study'),db.all('exams')]);
+ return `<h2>Research tools</h2><p class="mute">Evidence for study questions 1 to 3. Everything stays on this phone and exports to Excel.</p>
+ <div class="seg">${[['acc','Accuracy'],['tam','Acceptability'],['enh','Improve']].map(([k,l])=>`<button class="btn ${st.tab==k?'':'ghost'}" data-act="stTab" data-t="${k}">${l}</button>`).join('')}</div>`+ST[st.tab](rec,ex);
+};
+V.analysis=async id=>{
+ const [ex,sh]=await Promise.all([db.all('exams'),db.all('sheets')]);ex.sort((a,b)=>b.at-a.at);
+ const e=ex.find(x=>x.id==id)||ex[0];
+ if(!e)return `<h2>Item analysis</h2>`+empty('No exams yet','Create an exam and scan some papers first.');
+ const pp=sh.filter(x=>x.examId==e.id),R=pp.length>=6&&ITEM.analyze(e.key,pp.map(x=>x.answers)),
+  head=`<h2>Item analysis</h2><label>Exam<select data-act="goAn">${ex.map(x=>`<option value="${x.id}" ${x.id==e.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label>`;
+ if(!R)return head+empty('Need at least 6 papers',`This exam has ${pp.length}. Scan more papers, or load the sample class on Home.`);
+ const bins=Array(10).fill(0);R.tot.forEach(t=>bins[Math.min(9,Math.floor(t/R.n*10))]++);const mx=Math.max(...bins),
+  rel=R.kr20==null?'n/a':R.kr20.toFixed(2),rl=R.kr20==null?'':R.kr20>=.8?'High':R.kr20>=.7?'Good':R.kr20>=.5?'Fair':'Low',
+  tag={keep:'Keep',revise:'Revise',discard:'Discard'},order={discard:0,revise:1,keep:2};
+ return head+`<div class="stats">${stat(R.N,'Papers analyzed')}${stat(Math.round(R.mean/R.n*100)+'%','Average score','g')}
+ ${stat(rel,'Reliability (KR-20) '+rl,'y')}${stat(R.c.revise+R.c.discard,'Items to fix',R.c.revise+R.c.discard?'r':'')}</div>
+ ${R.N<30?`<p class="mute">With ${R.N} papers, treat these results as a guide. About 30 or more papers give firmer decisions.</p>`:''}
+ <div class="card"><h3>Score spread</h3><svg viewBox="0 0 300 112" role="img" aria-label="Score distribution">${bins.map((c,i)=>{const h=c/mx*78;return `<rect x="${i*30+4}" y="${92-h}" width="22" height="${h}" rx="5" style="fill:var(--blue)"/><text x="${i*30+15}" y="106" font-size="9" text-anchor="middle" style="fill:var(--mute)">${i*10}%</text>${c?`<text x="${i*30+15}" y="${87-h}" font-size="10" font-weight="700" text-anchor="middle" style="fill:var(--ink)">${c}</text>`:''}`}).join('')}</svg></div>
+ <div class="card"><h3>Test map</h3><span class="mute">${R.c.keep} keep, ${R.c.revise} revise, ${R.c.discard} discard</span>
+ <div class="imap">${R.items.map(x=>`<i class="${x.d}" style="--i:${x.q}">${x.q}</i>`).join('')}</div></div>
+ <h3 style="margin-top:20px">Items, most urgent first</h3>`+
+ [...R.items].sort((a,b)=>order[a.d]-order[b.d]||a.D-b.D).map(x=>`<details class="q"><summary>Q${x.q}<span class="tag ${x.d}">${tag[x.d]}</span><span class="bar"><i style="width:${Math.round(x.p*100)}%"></i></span><span class="mute">${Math.round(x.p*100)}% | D ${x.D.toFixed(2)}</span></summary>
+  ${x.why.length?`<p class="mute">${x.why.join(' ')}</p>`:'<p class="mute">Healthy item: it separates stronger from weaker students and every option is working.</p>'}
+  ${['A','B','C','D'].map(l=>`<div class="dr"><b>${l}</b><span class="bar ${l==x.key?'k':''}"><i style="width:${x.cnt[l]/R.N*100}%"></i></span><span>${x.cnt[l]}${l==x.key?' (key)':''}</span></div>`).join('')}
+  ${x.cnt['']?`<p class="mute">Left blank: ${x.cnt['']}</p>`:''}</details>`).join('')+
+ `<div class="row"><button class="btn" data-act="exportItems" data-id="${e.id}">Download analysis for Excel</button></div>
+ <details class="q"><summary>How items are judged</summary><p class="mute"><b>Difficulty</b> is the share of students who got the item right. <b>Discrimination (D)</b> is how much more often the top 27% of scorers got it right than the bottom 27%. <b>Keep:</b> D of 0.20 or more, with 25% to 85% correct. <b>Revise:</b> weak D, too hard or too easy, or two or more unused options. <b>Discard:</b> negative D, or the top scorers prefer a wrong option. <b>KR-20</b> shows how consistently the whole test measures students; 0.70 or higher is good.</p></details>`;
+};
+V.scan=async()=>{
+ const ex=(await db.all('exams')).sort((a,b)=>b.at-a.at);
+ if(!ex.length)return `<h2>Scanner</h2>`+empty('Create an exam first','The scanner needs an answer key. Add one in Exams, or load the sample class on Home.')+`<a class="btn ghost" href="#sheets">Print answer sheets</a>`;
+ const c=cfg.get(),o=(a,v)=>a.map(x=>`<option ${x==v?'selected':''}>${x}</option>`).join('');
+ return `<h2>Scanner</h2><div class="card"><label style="display:flex;gap:10px;align-items:center;margin:0"><input type="checkbox" data-cf="ev" ${c.ev?'checked':''} style="width:auto;margin:0"><span>Study mode: log accuracy against the paper</span></label>${c.ev?`<div class="row"><label>Lighting<select data-cf="lt">${o(['Bright','Normal','Dim'],c.lt||'Normal')}</select></label><label>Marks<select data-cf="mq">${o(['Dark pen','Light pencil','Mixed'],c.mq||'Dark pen')}</select></label><label>Phone<input data-cf="dv" value="${esc(c.dv||'')}" placeholder="e.g., Redmi 12"></label></div>`:''}</div><div class="card"><label>Exam<select id="se">${ex.map(x=>`<option value="${x.id}">${esc(x.title)} (${x.n} items)</option>`).join('')}</select></label>
+ <div class="cam"><video id="vid" playsinline muted></video><i class="fl"></i><div class="lock" id="lock">Camera is off.</div></div>
+ <div class="row"><button class="btn" data-act="camOn">Open camera</button><button class="btn" id="snap" data-act="snap" disabled>Capture</button>
+ <label class="btn ghost" style="cursor:pointer;text-align:center">Choose photo<input type="file" accept="image/*" capture="environment" id="pick" style="display:none"></label></div></div><div id="rev"></div>`;
+};
+V.settings=async()=>{
+ const c=cfg.get(),rd=await ready();
+ return `<h2>Settings</h2><div class="card"><label>Teacher name<input id="sn" value="${esc(c.name||'')}"></label>
+ <label>School<input id="ss" value="${esc(c.school||'Kapayapaan Integrated School')}"></label>
+ <label>Google Sheets web app link<input id="su" inputmode="url" placeholder="https://script.google.com/macros/s/…" value="${esc(c.url||'')}"></label>
+ <button class="btn" data-act="saveCfg">Save settings</button></div>
+ <div class="card"><h3>Look and feel</h3><label>Theme<select data-cf="theme">${['Auto','Light','Dark'].map(x=>`<option ${(c.theme||'Auto')==x?'selected':''}>${x}</option>`).join('')}</select></label>
+ <label style="display:flex;gap:10px;align-items:center"><input type="checkbox" data-cf="snd" ${c.snd===false?'':'checked'} style="width:auto;margin:0">Play sounds when scanning</label></div>
+ <div class="card"><h3>Offline readiness</h3>${rd.map(([ok,t,h])=>`<div class="item" style="margin:10px 0"><div><b>${t}</b>${ok?'':`<div class="mute">${h}</div>`}</div><span class="tag ${ok?'keep':'revise'}">${ok?'Ready':'To do'}</span></div>`).join('')}${rd[2][0]?'':`<button class="btn" data-act="install">Add to home screen</button>`}</div>
+ <div class="card"><h3>Connect Google Sheets</h3>
+ <ol><li>Tap <b>Copy script</b>.</li><li>In a new Google Sheet, open Extensions, then Apps Script. Paste the script and save.</li><li>Choose Deploy, then New deployment, then Web app. Set <b>Execute as: Me</b> and <b>Access: Anyone</b>, and copy the link.</li><li>Paste the link above, save, and tap <b>Test connection</b>.</li></ol>
+ <div class="row"><button class="btn" data-act="copyGas">Copy script</button><a class="btn ghost" href="https://sheets.new" target="_blank" rel="noopener">New Google Sheet</a><button class="btn ghost" data-act="test">Test connection</button></div>
+ <p class="mute">Internet is only needed for setup and sending. Scanning always works offline. For Excel, open the sheet and choose File, Download, Microsoft Excel (.xlsx).</p></div>
+ <div class="card"><h3>Erase everything</h3><p class="mute">Deletes all classes, exams, and checked papers stored on this phone.</p>
+ <button class="btn ghost del" data-act="wipe">Erase all data</button></div>
+ <p class="mute">TSEKmate v1.0, polish</p>`;
+};
+
+/* ===== Actions ===== */
+const A={
+ items(b){draft.n=+b.value;draft.key=Array.from({length:draft.n},(_,i)=>draft.key[i]||'');$('#grid').innerHTML=grid()},
+ cell(b){const i=+b.dataset.i;draft.key[i]=L[(L.indexOf(draft.key[i])+1)%5];$('#grid').innerHTML=grid()},
+ async addClass(){
+  const name=$('#cn').value.trim(),students=$('#cs').value.split('\n').map(x=>x.trim()).filter(Boolean);
+  if(!name)return toast('Enter a class name.');if(!students.length)return toast('Add at least one student.');
+  await db.put('classes',{id:uid(),name,students});toast('Class saved.');render();
+ },
+ async delClass(b){
+  await db.del('classes',b.dataset.id);
+  for(const e of (await db.all('exams')).filter(x=>x.classId==b.dataset.id)){
+   for(const s of (await db.all('sheets')).filter(x=>x.examId==e.id)){await db.del('sheets',s.id);await db.del('outbox',s.id)}
+   await db.del('exams',e.id);
+  }
+  toast('Class deleted.');render();
+ },
+ async saveExam(){
+  const title=$('#et').value.trim(),classId=$('#ec').value,gap=draft.key.indexOf('');
+  if(!title)return toast('Enter an exam title.');if(!classId)return toast('Add a class first.');
+  if(gap>-1)return toast('Set the answer for item '+(gap+1)+'.');
+  await db.put('exams',{id:uid(),classId,title,n:draft.n,key:[...draft.key],at:Date.now()});
+  draft={n:draft.n,key:Array(draft.n).fill('')};toast('Exam saved.');render();
+ },
+ async exportExam(b){
+  const ex=(await db.all('exams')).find(x=>x.id==b.dataset.id);if(!ex)return toast('Create or load an exam first.');
+  const sh=(await db.all('sheets')).filter(x=>x.examId==ex.id);
+  download(ex.title,[[ex.title],[],['Student','Score','Total','Percent',...ex.key.map((_,i)=>'Q'+(i+1))],['ANSWER KEY','','','',...ex.key],
+   ...sh.map(s=>[s.student,s.score,s.total,Math.round(s.score/s.total*100)+'%',...s.answers])]);
+  toast('Spreadsheet downloaded.');
+ },
+ async sync(b){
+  const quiet=b===true,u=cfg.get().url;
+  if(!u)return quiet||toast('Add your Google Sheets link in Settings first.');
+  if(!navigator.onLine)return quiet||toast('You are offline. Results are safe and will send later.');
+  const [o,s,e]=await Promise.all([db.all('outbox'),db.all('sheets'),db.all('exams')]);let n=0,link,why='';
+  for(const x of o.filter(x=>x.status=='pending')){
+   const sh=s.find(y=>y.id==x.id),ex=sh&&e.find(y=>y.id==sh.examId);if(!ex)continue;
+   try{const r=await(await fetch(u,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({id:sh.id,exam:ex.title,key:ex.key,student:sh.student,answers:sh.answers,total:sh.total,at:sh.at})})).json();
+    if(!r.ok)throw new Error(r.error);x.status='synced';await db.put('outbox',x);n++;link=r.url}catch(err){why=err.message||'check your link';break}}
+  if(link)cfg.set({sheet:link});
+  if(why&&!quiet)toast('Could not send: '+why+'.');else if(n)toast(`Sent ${n} result${n==1?'':'s'} to Google Sheets.`);else if(!quiet)toast('Nothing waiting to send.');
+  if(n||why)render();
+ },
+ async copyGas(){try{await navigator.clipboard.writeText($('#gas').textContent.trim());toast('Script copied. Paste it into Apps Script.')}catch{toast('Copy failed. Open TSEKmate-Code.gs and copy it from there.')}},
+ async test(){const u=($('#su').value||cfg.get().url||'').trim();if(!u)return toast('Paste your web app link first.');
+  try{const r=await(await fetch(u)).json();if(!r.ok)throw 0;cfg.set({url:u,sheet:r.url});toast('Connected to your spreadsheet.');render()}
+  catch{toast('Could not connect. Check the link, and that access is set to Anyone.')}},
+ async seed(){
+  const names=['Dela Cruz, Juan','Santos, Maria','Reyes, Jose','Garcia, Ana','Mendoza, Paolo','Bautista, Liza','Aquino, Carlo','Ramos, Bea'],classId=uid();
+  const key=Array.from({length:40},()=>L[1+Math.floor(Math.random()*4)]);
+  const ex={id:uid(),classId,title:'Sample Term Exam – Science 8',n:40,key,at:Date.now()};
+  await db.put('classes',{id:classId,name:'Grade 8 – Sampaguita (sample)',students:names});await db.put('exams',ex);
+  for(const st of names){const p=.45+Math.random()*.45;
+   await saveSheet(ex,st,key.map(k=>Math.random()<p?k:L.slice(1).filter(x=>x!=k)[Math.floor(Math.random()*3)]))}
+  toast('Sample class loaded.');render();
+ },
+ shn(b){sh.n=+b.dataset.n;render()},
+ shscan(){sh.scan=!sh.scan;render()},
+ out(h){$('#print').innerHTML=h;setTimeout(()=>print(),60)},
+ printSheet(){A.out(SHEET.svg(SHEET.layout(sh.n)))},
+ async printClass(){
+  const cl=(await db.all('classes')).find(c=>c.id==$('#pc').value);if(!cl)return toast('Add a class first.');
+  if(cl.students.length>99)return toast('Paper No. goes up to 99. Split this class in two.');
+  const ex=(await db.all('exams')).find(e=>e.id==$('#pe').value),n=ex?ex.n:sh.n;
+  A.out(cl.students.map((st,i)=>SHEET.svg(SHEET.layout(n,{name:st,paperNo:i+1,section:cl.name,exam:ex?ex.title:''}))).join(''));
+ },
+ camOn(){cam.on()},
+ snap(){if(cam.s)process(cam.frame(1280))},
+ fix(b){const i=+b.dataset.q;scn.ans[i]=b.dataset.v;scn.ok.add(i);showRev()},
+ discard(){scn=null;$('#rev').innerHTML='';if(cam.s)cam.loop()},
+ async saveScan(){const st=$('#stu').value;if(!st)return toast('Choose the student first.');
+  const cf=cfg.get();if(cf.ev)await db.put('study',{id:uid(),kind:'acc',examId:scn.ex.id,n:scn.ex.n,key:[...scn.ex.key],read:scn.raw,final:[...scn.ans],truth:[...scn.truth],ms:scn.ms,light:cf.lt||'Normal',marks:cf.mq||'Dark pen',device:cf.dv||'Unspecified',at:Date.now()});
+  await saveSheet(scn.ex,st,scn.ans);navigator.vibrate&&navigator.vibrate([20,40,20]);beep(660);setTimeout(()=>beep(990),90);if(score(scn.ex.key,scn.ans)/scn.ex.n>=.9)burst();toast(st.split(',')[0]+': '+score(scn.ex.key,scn.ans)+' / '+scn.ex.n+' saved.');scn=null;$('#rev').innerHTML='';if(cam.s)cam.loop();A.sync(true)},
+ goAn(b){location.hash='analysis/'+b.value},
+ async exportItems(b){
+  const ex=(await db.all('exams')).find(x=>x.id==b.dataset.id),pp=(await db.all('sheets')).filter(x=>x.examId==ex.id),R=ITEM.analyze(ex.key,pp.map(x=>x.answers));
+  if(!R)return toast('Scan at least 2 papers first.');
+  download(ex.title+' item analysis',[[ex.title],['Papers',R.N,'Average %',Math.round(R.mean/R.n*100),'KR-20',R.kr20==null?'':R.kr20.toFixed(3)],[],
+   ['Item','Key','Difficulty (p)','Discrimination (D)','A','B','C','D','Blank','Decision','Notes'],
+   ...R.items.map(x=>[x.q,x.key,x.p.toFixed(3),x.D.toFixed(3),x.cnt.A,x.cnt.B,x.cnt.C,x.cnt.D,x.cnt[''],x.d,x.why.join(' ')])]);
+  toast('Item analysis downloaded.');
+ },
+ stTab(b){st.tab=b.dataset.t;render()},
+ truth(b){const i=+b.dataset.i;scn.truth[i]=L[(L.indexOf(scn.truth[i])+1)%5];showRev()},
+ tamAns(b){st.tam[+b.dataset.i]=+b.dataset.v;b.parentNode.querySelectorAll('.cell').forEach(c=>c.classList.toggle('on',c==b))},
+ async tamSave(){if(st.tam.includes(0))return toast('Answer all 24 statements first.');
+  await db.put('study',{id:uid(),kind:'tam',role:$('#sr').value.trim(),a:[...st.tam],comment:$('#sc').value.trim(),at:Date.now()});st.tam=Array(24).fill(0);toast('Response saved.');render()},
+ async exportStudy(b){const k=b.dataset.k,[all,ex]=await Promise.all([db.all('study'),db.all('exams')]),R=all.filter(r=>r.kind==(k=='items'?'acc':k)).sort((x,y)=>x.at-y.at),d=r=>new Date(r.at).toLocaleString();
+  if(k=='acc')download('TSEKmate sheet log',[['Sheet','Exam','Items','Phone','Lighting','Marks','Read ms','Correct responses','Total responses','RRA','True score','Scanned score','Score correct (SCA)','Errors after teacher review','Error details','Logged'],
+   ...R.map((r,i)=>{const e=hit(r),key=keyOf(r,ex),ts=key?score(key,r.truth):'',ss=key?score(key,r.read):'';
+    return[i+1,(ex.find(x=>x.id==r.examId)||{}).title||'',r.n,r.device,r.light,r.marks,r.ms,e,r.n,(e/r.n).toFixed(4),ts,ss,key?(ts===ss?1:0):'',r.final.filter((x,j)=>x!==r.truth[j]).length,r.read.map((a,j)=>a===r.truth[j]?'':`Q${j+1}:${a||'-'}>${r.truth[j]||'-'}`).filter(Boolean).join(' '),d(r)]})]);
+  else if(k=='items'){const A=agree(R,ex),f=x=>x.toFixed(2),rows=[];
+   A.rows.forEach(x=>x.c.a.items.forEach((a,i)=>{const b=x.c.b.items[i];rows.push([x.t,i+1,a.key,f(a.p),f(b.p),f(a.p)==f(b.p)?1:0,f(a.D),f(b.D),f(a.D)==f(b.D)?1:0,a.fd,b.fd,a.fd==b.fd?1:0])}));
+   download('TSEKmate item comparison',[['Exam','Item','Key','Difficulty (scan)','Difficulty (verified)','DIA match','Discrimination (scan)','Discrimination (verified)','DISA match','Working distractors (scan)','Working distractors (verified)','DEA match'],...rows,[],['Totals','','','','',A.T.dia+' of '+A.T.n,'','',A.T.disa+' of '+A.T.n,'','',A.T.dea+' of '+A.T.n]])}
+  else download('TSEKmate acceptability survey',[['Respondent',...TAM.flatMap(([n,c,q])=>q.map((_,j)=>c+(j+1))),...TAM.map(g=>g[1]+' mean'),'Overall','Comment','Logged'],
+   ...R.map(r=>{const m=tamMeans([r]);return[r.role||'',...r.a,...m.map(v=>v.toFixed(2)),(m.reduce((a,b)=>a+b,0)/8).toFixed(2),r.comment,d(r)]})]);
+  toast('Downloaded for Excel.')},
+ theme(){cfg.set({theme:document.documentElement.dataset.theme=='dark'?'Light':'Dark'});applyTheme()},
+ install(){if(ip){ip.prompt();ip=null}else toast("iPhone: tap Share, then Add to Home Screen. Android: browser menu, then Install app.")},
+ saveCfg(){cfg.set({name:$('#sn').value.trim(),school:$('#ss').value.trim(),url:$('#su').value.trim()});toast('Settings saved.')},
+ async wipe(){if(!confirm('Erase all classes, exams, and checked papers on this phone?'))return;for(const s of S)await db.clear(s);toast('All data erased.');render()}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b&&!/SELECT|INPUT/.test(b.tagName))A[b.dataset.act](b)});
+document.addEventListener('change',async e=>{
+ if(e.target.dataset.cf){const t=e.target;cfg.set({[t.dataset.cf]:t.type=='checkbox'?t.checked:t.value});applyTheme();if(t.type=='checkbox')render()}
+ if(e.target.id=='stu')scn.stu=e.target.value;
+ if(e.target.id=='pick'&&e.target.files[0]){try{const bm=await createImageBitmap(e.target.files[0]),k=Math.min(1,1280/Math.max(bm.width,bm.height)),c=document.createElement('canvas');
+  c.width=bm.width*k|0;c.height=bm.height*k|0;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(bm,0,0,c.width,c.height);await process(x.getImageData(0,0,c.width,c.height))}catch{toast('That photo could not be opened.')}e.target.value=''}
+ const b=e.target.closest('select[data-act]');if(b)A[b.dataset.act](b)});
+
+/* ===== Router, status, offline support ===== */
+async function render(){
+ cam.stop();scn=null;
+ const[t,arg]=(location.hash.slice(1)||'home').split('/'),v=V[t]?t:'home';
+ document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.dataset.t==(v=='sheets'||v=='analysis'?'exams':v=='study'?'settings':v)));
+ $('#app').innerHTML=await V[v](arg);scrollTo(0,0);movePill();countUp();
+}
+function pill(){const p=$('#pill'),on=navigator.onLine;p.className='pill'+(on?'':' off');
+ p.innerHTML=`<i></i>${on?'Online':'Offline, still works'}${mode=='mem'?' (temporary storage)':''}`}
+addEventListener('hashchange',render);addEventListener('resize',movePill);addEventListener('online',()=>A.sync(true));addEventListener('online',pill);addEventListener('offline',pill);
+applyTheme();pill();render().then(()=>{A.sync(true);movePill()});
+if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();   /* ask the phone not to clear our data */
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+ let had=!!navigator.serviceWorker.controller;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{toast(had?'Update installed. Close and reopen TSEKmate to use it.':'Ready to work offline.');had=true});
+ navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
