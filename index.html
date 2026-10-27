@@ -619,24 +619,30 @@ const SCAN=(()=>{
  const OFF=[],MARK=.3,FAINT=.45;
  for(let dx=-1.2;dx<1.21;dx+=.6)for(let dy=-1.2;dy<1.21;dy+=.6)if(dx*dx+dy*dy<=1.5)OFF.push([dx,dy]);
  function gray(im){const{data:d,width:w,height:h}=im,g=new Uint8Array(w*h);for(let i=0;i<w*h;i++)g[i]=(d[4*i]*77+d[4*i+1]*150+d[4*i+2]*29)>>8;return{g,w,h}}
- function corners({g,w,h}){
+ function corners1({g,w,h},mn){
   const W1=w+1,I=new Float64Array(W1*(h+1)),bin=new Uint8Array(w*h),k=Math.max(8,w/10|0);
   for(let y=0;y<h;y++){let r=0;for(let x=0;x<w;x++){r+=g[y*w+x];I[(y+1)*W1+x+1]=I[y*W1+x+1]+r}}
   for(let y=0;y<h;y++){const y0=Math.max(0,y-k),y1=Math.min(h,y+k+1);
    for(let x=0;x<w;x++){const x0=Math.max(0,x-k),x1=Math.min(w,x+k+1),m=(I[y1*W1+x1]-I[y0*W1+x1]-I[y1*W1+x0]+I[y0*W1+x0])/((x1-x0)*(y1-y0));bin[y*w+x]=g[y*w+x]<m*.7?1:0}}
   const lab=new Uint8Array(w*h),c=[],st=[];
-  for(let i=0;i<w*h;i++)if(bin[i]&&!lab[i]){let a=0,sx=0,sy=0,x0=w,x1=0,y0=h,y1=0;lab[i]=1;st.length=0;st.push(i);
-   while(st.length){const p=st.pop(),x=p%w,y=p/w|0;a++;sx+=x;sy+=y;x<x0&&(x0=x);x>x1&&(x1=x);y<y0&&(y0=y);y>y1&&(y1=y);
+  for(let i=0;i<w*h;i++)if(bin[i]&&!lab[i]){let a=0,sx=0,sy=0,sg=0,x0=w,x1=0,y0=h,y1=0;lab[i]=1;st.length=0;st.push(i);
+   while(st.length){const p=st.pop(),x=p%w,y=p/w|0;a++;sx+=x;sy+=y;sg+=g[p];x<x0&&(x0=x);x>x1&&(x1=x);y<y0&&(y0=y);y>y1&&(y1=y);
     for(const q of[x>0?p-1:-1,x<w-1?p+1:-1,y>0?p-w:-1,y<h-1?p+w:-1])if(q>=0&&bin[q]&&!lab[q]){lab[q]=1;st.push(q)}}
    const bw=x1-x0+1,bh=y1-y0+1,cx=sx/a,cy=sy/a;
-   if(a>w*h*3e-4&&a<w*h*.01&&bw/bh>.6&&bw/bh<1.7&&a/(bw*bh)>.5)c.push({a,x:cx,y:cy,hole:!bin[Math.round(cy)*w+Math.round(cx)]})}
+   if(a>w*h*mn&&a<w*h*.01&&bw/bh>.6&&bw/bh<1.7&&a/(bw*bh)>.5)c.push({a,x:cx,y:cy,gv:sg/a,bb:[x0,y0,x1,y1],hole:!bin[Math.round(cy)*w+Math.round(cx)]})}
   if(c.length<4)return null;
   const pick=f=>c.reduce((b,p)=>f(p)<f(b)?p:b),L=[pick(p=>p.x+p.y),pick(p=>p.y-p.x),pick(p=>-(p.x+p.y)),pick(p=>p.x-p.y)]; /* TL,TR,BR,BL as seen */
   if(new Set(L).size<4)return null;
   const ar=L.map(p=>p.a);if(Math.max(...ar)/Math.min(...ar)>3.5)return null;
   const hs=L.filter(p=>p.hole);if(hs.length!=1)return null; /* the ring marker is the true bottom right: fixes rotation */
-  const k0=L.indexOf(hs[0]);return{pts:[0,1,2,3].map(i=>{const p=L[(i+k0+2)%4];return[p.x,p.y]})};
+  const k0=L.indexOf(hs[0]),sol=L.filter(p=>!p.hole);return{pts:[0,1,2,3].map(i=>{const p=L[(i+k0+2)%4];return[p.x,p.y]}),blk:sol.reduce((t,p)=>t+p.gv,0)/sol.length,bbs:sol.map(p=>p.bb)};
  }
+ /* looks for the corner squares at three sizes, so the sheet can be held farther away */
+ function corners(G){for(const t of[3e-4,1.2e-4,5e-5]){const r=corners1(G,t);if(r)return r}return null}
+ /* edge sharpness of the black squares (1 = razor sharp, near 0 = very blurry) */
+ function edge(g,w,bb,ct){const v=[];for(let y=bb[1];y<=bb[3];y++){let m=0;for(let x=Math.max(0,bb[0]-4);x<Math.min(w-1,bb[2]+4);x++)m=Math.max(m,Math.abs(g[y*w+x+1]-g[y*w+x]));v.push(m)}v.sort((a,b)=>a-b);return(v[v.length>>1]||0)/Math.max(1,ct)}
+ /* whole-image sharpness, used to pick the best of a few quick shots */
+ function sharp(im){const{g,w,h}=gray(im);let s=0,c=0;for(let y=h>>2;y<h*3>>2;y+=2)for(let x=w>>2;x<w*3>>2;x+=2){s+=Math.abs(g[y*w+x+1]-g[y*w+x])+Math.abs(g[(y+1)*w+x]-g[y*w+x]);c++}return s/Math.max(1,c)}
  function homog(src,dst){const A=[],b=[];
   for(let i=0;i<4;i++){const[x,y]=src[i],[u,v]=dst[i];A.push([x,y,1,0,0,0,-u*x,-u*y]);b.push(u);A.push([0,0,0,x,y,1,-v*x,-v*y]);b.push(v)}
   for(let i=0;i<8;i++){let p=i;for(let r=i+1;r<8;r++)if(Math.abs(A[r][i])>Math.abs(A[p][i]))p=r;
@@ -652,19 +658,31 @@ const SCAN=(()=>{
   const at=(x,y)=>{let s=0;for(const[dx,dy]of OFF){const[u,v]=map(H,x+dx*ks,y+dy*ks);if(!(u>=0&&v>=0&&u<w-1&&v<h-1)){out++;continue}s+=g[(v|0)*w+(u|0)]}return s/OFF.length};
   const B=geo.bubbles.map(b=>at(b.x,b.y));
   if(out>OFF.length*5)return{ok:false,why:'Part of the page is outside the picture. Step back and try again.'};
-  const med=[...B].sort((a,b)=>a-b)[B.length>>1],fills=m=>{const base=Math.max(...m,.8*med);return m.map(v=>Math.max(0,(base-v)/base))};
+  const med=[...B].sort((a,b)=>a-b)[B.length>>1],blk=Math.min(c.blk,.6*med),bases=[],
+   fills=m=>{const base=Math.max(...m,.8*med);bases.push(base);return m.map(v=>Math.max(0,(base-v)/Math.max(base-blk,.3*base)))};
   const ans=[],flags=[],fl=[];
-  for(let q=0;q<n;q++){const f=fills(B.slice(q*4,q*4+4)),top=Math.max(...f),i=f.indexOf(top),sec=Math.max(...f.filter((_,j)=>j!=i));let a='',fg=null;
-   if(top<MARK)fg='blank';else if(sec>=MARK&&sec>=.6*top)fg='multi';else{a='ABCD'[i];if(top<FAINT)fg='faint'}
+  const F=[];for(let q=0;q<n;q++)F.push(fills(B.slice(q*4,q*4+4)));
+  /* the mark threshold adapts to this photo: noise is read from the unmarked bubbles, so light pencil still counts */
+  const nzs=F.map(f=>[...f].sort((a,b)=>b-a)[1]).sort((a,b)=>a-b),nz=nzs[nzs.length>>1]||0,mt=Math.min(.3,Math.max(.16,3*nz+.06)),ft=mt+.17;
+  for(let q=0;q<n;q++){const f=F[q],top=Math.max(...f),i=f.indexOf(top),sec=Math.max(...f.filter((_,j)=>j!=i));let a='',fg=null;
+   if(top<mt)fg='blank';else if(sec>=mt&&sec>=.6*top)fg='multi';else{a='ABCD'[i];if(top<ft)fg='faint'}
    ans.push(a);flags.push(fg);fl.push(f)}
-  const dg=r=>{const f=fills(geo.paper.filter(p=>p.row==r).map(p=>at(p.x,p.y))),t=Math.max(...f);return t>=MARK?f.indexOf(t):null};
+  const ppm=Math.hypot(c.pts[1][0]-c.pts[0][0],c.pts[1][1]-c.pts[0][1])/Math.hypot(m[1].x-m[0].x,m[1].y-m[0].y),
+   ctr=(med-blk)/med,uneven=(Math.max(...bases)-Math.min(...bases))/Math.max(...bases),
+   shp=c.bbs.map(b=>edge(g,w,b,med-blk)).sort((a,b)=>a-b)[1],tp=[];
+  if(shp<.3)tp.push('The picture is blurry. Hold the phone steady and let it focus.');
+  if(ctr<.4)tp.push('Low contrast. Add light so the marks stand out.');
+  if(uneven>.3)tp.push('Uneven light or a shadow crosses the sheet. Move the lamp or change the angle.');
+  if(ppm<2.8)tp.push('The sheet looks small in the picture. Move a little closer.');
+  const q={level:tp.length?(tp.length>1||shp<.2?'Poor':'Fair'):'Good',tips:tp,sharp:shp,ppm,contrast:ctr,uneven};
+  const dg=r=>{const f=fills(geo.paper.filter(p=>p.row==r).map(p=>at(p.x,p.y))),t=Math.max(...f);return t>=mt?f.indexOf(t):null};
   const t=dg(0),o=dg(1),pn=t!=null&&o!=null&&t*10+o>0?t*10+o:null;
   const rect=s=>{const W=geo.W*s|0,Hh=geo.H*s|0,d=new Uint8ClampedArray(W*Hh*4);
    for(let y=0;y<Hh;y++)for(let x=0;x<W;x++){const[u,v]=map(H,x/s,y/s),i=(y*W+x)*4,p=u>=0&&v>=0&&u<w&&v<h?g[(v|0)*w+(u|0)]:60;d[i]=d[i+1]=d[i+2]=p;d[i+3]=255}
    return{data:d,width:W,height:Hh}};
-  return{ok:true,ans,flags,fills:fl,pn,geo,rect};
+  return{ok:true,ans,flags,fills:fl,pn,geo,rect,mt,q};
  }
- return{gray,corners,read};
+ return{gray,corners,read,sharp};
 })();
 /*SCAN-END*/
 
@@ -702,9 +720,10 @@ async function scanCore(im){
 }
 function showRev(){
  const{ex,cl,r,ans}=scn,need=ans.map((a,i)=>[i,r.flags[i]]).filter(([i,f])=>(f=='multi'||f=='faint')&&!scn.ok.has(i)),
-  blanks=ans.map((a,i)=>a?0:i+1).filter(Boolean),sc=score(ex.key,ans),pc=Math.round(sc/ex.n*100);
+  blanks=ans.map((a,i)=>a?0:i+1).filter(Boolean),sc=score(ex.key,ans),pc=Math.round(sc/ex.n*100),miss=ans.map((a,i)=>a==ex.key[i]?0:i+1).filter(Boolean),
+  qh=r.q?`<p class="mute"><b>Scan quality: ${r.q.level}.</b> ${r.q.tips.length?r.q.tips.join(' '):'Sharp, even light, and clear marks.'}</p>`:'';
  const btn=(i,v,t)=>`<button class="cell ${ans[i]==v&&v?'on':''}" style="width:40px" data-act="fix" data-q="${i}" data-v="${v}">${t}</button>`;
- $('#rev').innerHTML=`<div class="card"><div class="sc"><div class="dial" style="--p:${pc}"><b>${sc}</b><small>of ${ex.n}</small></div><div><h3>${pc>=90?'Excellent work':pc>=75?'Solid score':pc>=50?'Passing':'Needs review'}</h3><span class="mute">${pc}% correct</span></div></div><canvas id="rv"></canvas>
+ $('#rev').innerHTML=`<div class="card"><div class="sc"><div class="dial" style="--p:${pc}"><b>${sc}</b><small>of ${ex.n}</small></div><div><h3>${pc>=90?'Excellent work':pc>=75?'Solid score':pc>=50?'Passing':'Needs review'}</h3><span class="mute">${pc}% correct</span></div></div><canvas id="rv"></canvas>${qh}<p class="mute">${miss.length?'Missed '+miss.length+': '+miss.slice(0,20).join(', ')+(miss.length>20?'...':''):'No missed items.'}</p>
  <label>Student<select id="stu"><option value="">Choose a student</option>${(cl?cl.students:[]).map(x=>`<option ${x==scn.stu?'selected':''}>${esc(x)}</option>`).join('')}</select></label>
  <p class="mute">${r.pn?`Paper No. ${r.pn} was read from the sheet.`:'No Paper No. was shaded, so choose the student.'} Green rings are correct, red are wrong, and a dashed green ring shows the right answer.</p>
  ${need.length?`<h3>Check ${need.length} mark${need.length>1?'s':''}</h3>`+need.map(([i,f])=>`<div class="item"><b>${i+1}</b><span class="mute">${f=='multi'?'two marks':'faint mark'}</span><span>${'ABCD'.split('').map(c=>btn(i,c,c)).join('')}${btn(i,'','–')}</span></div>`).join(''):'<p class="mute">Every mark was read clearly.</p>'}
@@ -717,7 +736,7 @@ function drawRev(){
  const{ex,r,ans,im}=scn,s=2.4,c=$('#rv'),x=c.getContext('2d');c.width=im.width;c.height=im.height;x.putImageData(new ImageData(im.data,im.width,im.height),0,0);x.lineWidth=3;
  r.geo.bubbles.forEach(b=>{const L='ABCD'[b.k],a=ans[b.q-1],f=r.flags[b.q-1],key=ex.key[b.q-1],open=(f=='multi'||f=='faint')&&!scn.ok.has(b.q-1);
   const ring=(col,dash)=>{x.setLineDash(dash?[5,4]:[]);x.strokeStyle=col;x.beginPath();x.arc(b.x*s,b.y*s,r.geo.R*1.5*s,0,7);x.stroke()};
-  if(a==L||(open&&f=='multi'&&r.fills[b.q-1][b.k]>=.3))ring(open?'#FFB000':a==key?'#1F9D6E':'#E8483B');
+  if(a==L||(open&&f=='multi'&&r.fills[b.q-1][b.k]>=r.mt))ring(open?'#FFB000':a==key?'#1F9D6E':'#E8483B');
   else if(L==key&&a!=key&&!open)ring('#1F9D6E',1)});
 }
 
@@ -741,9 +760,16 @@ const ITEM=(()=>{
    if(p>.85)why.push('Very easy: over 85% answered correctly.');
    if(dead.length)why.push('Nobody chose '+dead.join(', ')+', so '+(dead.length>1?'those options do':'that option does')+' not distract.');
    const d=D<0||(bad&&D<.1)?'discard':(D<.2||p<.25||p>.85||dead.length>1)?'revise':'keep';
-   return{q:i+1,key:kc,p,D,cnt,d,why,fd:3-dead.length}});
+   const xs=papers.map(a=>a[i]==kc?1:0),ys=xs.map((x,j)=>tot[j]-x),my=ys.reduce((a,b)=>a+b,0)/N,sy=Math.sqrt(ys.reduce((a,y)=>a+(y-my)**2,0)/N),sx=Math.sqrt(p*(1-p)),
+    pb=sx&&sy?xs.reduce((a,x,j)=>a+(x-p)*(ys[j]-my),0)/N/(sx*sy):0,
+    dl=D>=.4?'Very good':D>=.3?'Good':D>=.2?'Fair':D>=0?'Poor':'Negative',pl=p>=.81?'Very easy':p>=.61?'Easy':p>=.41?'Moderate':p>=.21?'Difficult':'Very difficult',
+    opt=Object.fromEntries(LET.map(x=>[x,{u:up.filter(j=>papers[j][i]==x).length,l:lo.filter(j=>papers[j][i]==x).length}])),
+    fb=bad&&D<.2?'Check the answer key first. Stronger students prefer '+bad+'. If '+bad+' is really correct, rescore the item; if not, reword it.':D<0?'This item may be ambiguous or miskeyed. Reread the question and options, then reword or replace it.':p<.25?'Too hard for this class. Reteach the topic, then keep the item only if the content was taught.':p>.85&&D<.2?'Too easy to tell students apart. Keep it as a warm-up or replace it with a harder item.':dead.length?'Replace the unused option'+(dead.length>1?'s ':' ')+dead.join(', ')+' with believable wrong answers.':D<.2?'Weak at separating strong from weak students. Tighten the wording and make the wrong options more tempting.':'Good item. Keep it in your question bank.';
+   return{q:i+1,key:kc,p,D,cnt,d,why,fd:3-dead.length,pb,dl,pl,opt,fb}});
   const c={keep:0,revise:0,discard:0};items.forEach(x=>c[x.d]++);
-  return{N,n,k,tot,mean,sd:Math.sqrt(vr),kr20:n>1&&vr>0?n/(n-1)*(1-pq/vr):null,items,c};
+  const kr=n>1&&vr>0?n/(n-1)*(1-pq/vr):null,so=[...tot].sort((a,b)=>a-b),pc=tot.map(t=>t/n*100);
+  return{N,n,k,tot,mean,sd:Math.sqrt(vr),kr20:kr,items,c,med:(so[(N-1)>>1]+so[N>>1])/2,min:so[0],max:so[N-1],sem:kr==null?null:Math.sqrt(vr)*Math.sqrt(Math.max(0,1-kr)),
+   pass:pc.filter(x=>x>=75).length/N,bands:[pc.filter(x=>x>=85).length,pc.filter(x=>x>=75&&x<85).length,pc.filter(x=>x>=50&&x<75).length,pc.filter(x=>x<50).length]};
  }
  function compare(key,reads,truths){const a=analyze(key,reads),b=analyze(key,truths),f=x=>x.toFixed(2),m=g=>a.items.filter((x,i)=>g(x,b.items[i])).length;
   return{a,b,n:key.length,dia:m((x,y)=>f(x.p)==f(y.p)),disa:m((x,y)=>f(x.D)==f(y.D)),dea:m((x,y)=>x.fd==y.fd)}}
@@ -927,6 +953,22 @@ V.study=async()=>{
  return `<h2>Research tools</h2><p class="mute">Evidence for study questions 1 to 3. Everything stays on this phone and exports to Excel.</p>
  <div class="seg">${[['acc','Accuracy'],['tam','Acceptability'],['enh','Improve']].map(([k,l])=>`<button class="btn ${st.tab==k?'':'ghost'}" data-act="stTab" data-t="${k}">${l}</button>`).join('')}</div>`+ST[st.tab](rec,ex);
 };
+function scoreAn(R,pp){
+ const n=R.n,pc=x=>Math.round(x/n*100),mps=pc(R.mean),lab=mps>=85?'mastered':mps>=75?'near mastery':mps>=50?'developing':'beginning',tot=R.bands.reduce((a,b)=>a+b,0)||1,
+  hard=R.items.filter(x=>x.d!='discard'&&x.p<.5).sort((a,b)=>a.p-b.p).slice(0,3),fix=R.items.filter(x=>x.d=='discard'),ls=a=>a.map(x=>x.q).join(', '),
+  who=pp.map((x,j)=>({s:x.student||'Unnamed',t:R.tot[j],a:x.answers})).sort((a,b)=>b.t-a.t),low=who.filter(x=>x.t/n<.5).slice(-6).reverse(),tips=[],
+  band=t=>t/n>=.85?'Mastered':t/n>=.75?'Near mastery':t/n>=.5?'Developing':'Beginning',easy=R.items.filter(x=>x.p>=.6);
+ tips.push(`The class mean percentage score is ${mps}%, which is ${lab}. ${Math.round(R.pass*100)}% of students reached 75% or higher.`+(mps<75?' Consider reteaching the weakest topics before moving on.':''));
+ if(R.sd/n<.1)tips.push(`Scores are bunched together (SD ${R.sd.toFixed(1)} points), so this test does not separate stronger from weaker students much. Add a few harder items next time.`);
+ if(R.kr20!=null)tips.push(R.kr20>=.7?`Reliability is good (KR-20 ${R.kr20.toFixed(2)}), so these scores are dependable.`:`Reliability is low (KR-20 ${R.kr20.toFixed(2)}), so individual scores are less dependable. Fix the flagged items and add more good items before using this test for big decisions.`);
+ if(R.sem!=null)tips.push(`Each student's true score is likely within about ${R.sem.toFixed(1)} point${R.sem.toFixed(1)=='1.0'?'':'s'} of the score shown (standard error of measurement).`);
+ if(hard.length)tips.push(`Reteach the lessons behind item${hard.length>1?'s':''} ${ls(hard)}. Only ${hard.map(x=>Math.round(x.p*100)+'%').join(', ')} of students got ${hard.length>1?'them':'it'} right.`);
+ if(fix.length)tips.push(`Check the answer key and wording of item${fix.length>1?'s':''} ${ls(fix)} before counting ${fix.length>1?'them':'it'}. Stronger students did worse on ${fix.length>1?'them':'it'} than weaker ones.`);
+ if(low.length)tips.push(`Students who need help (below 50%): ${low.map(x=>esc(x.s.split(',')[0])+' '+pc(x.t)+'%').join(', ')}. Consider a short review or one-on-one check-in.`);
+ return `<div class="stats">${stat(String(R.med).replace(/\.0$/,''),'Median score')}${stat(R.sd.toFixed(1),'Standard deviation')}${stat(R.min+' to '+R.max,'Lowest to highest')}${stat(Math.round(R.pass*100)+'%','Passing (75% or more)',R.pass>=.75?'g':'r')}</div>
+ <div class="card"><h3>Mastery levels</h3>${['Mastered','Near mastery','Developing','Beginning'].map((l,i)=>`<div class="dr"><b style="width:auto;min-width:96px;font-size:12px">${l}</b><span class="bar ${i<2?'k':''}"><i style="width:${R.bands[i]/tot*100}%"></i></span><span>${R.bands[i]}</span></div>`).join('')}<p class="mute" style="font-size:13px;margin:8px 0 0">Mastered is 85% and up, near mastery 75 to 84%, developing 50 to 74%, beginning below 50%.</p></div>
+ <div class="card"><h3>Feedback on this test</h3><ol>${tips.map(t=>`<li>${t}</li>`).join('')}</ol></div>
+ <details class="q"><summary>Student results (${who.length})</summary>${who.map((x,i)=>{const rv=easy.filter(y=>x.a[y.q-1]!=y.key).map(y=>y.q).slice(0,6);return `<div class="item"><span><b>${i+1}. ${esc(x.s)}</b><br><span class="mute" style="font-size:13px">${band(x.t)} | ${pc(x.t)}%${rv.length?' | Review items '+rv.join(', '):''}</span></span><b>${x.t}/${n}</b></div>`}).join('')}</details>`}
 V.analysis=async id=>{
  const [ex,sh]=await Promise.all([db.all('exams'),db.all('sheets')]);ex.sort((a,b)=>b.at-a.at);
  const e=ex.find(x=>x.id==id)||ex[0];
@@ -940,13 +982,14 @@ V.analysis=async id=>{
  return head+`<div class="stats">${stat(R.N,'Papers analyzed')}${stat(Math.round(R.mean/R.n*100)+'%','Average score','g')}
  ${stat(rel,'Reliability (KR-20) '+rl,'y')}${stat(R.c.revise+R.c.discard,'Items to fix',R.c.revise+R.c.discard?'r':'')}</div>
  ${R.N<30?`<p class="mute">With ${R.N} papers, treat these results as a guide. About 30 or more papers give firmer decisions.</p>`:''}
+ ${scoreAn(R,pp)}
  <div class="card"><h3>Score spread</h3><svg viewBox="0 0 300 112" role="img" aria-label="Score distribution">${bins.map((c,i)=>{const h=c/mx*78;return `<rect x="${i*30+4}" y="${92-h}" width="22" height="${h}" rx="5" style="fill:var(--blue)"/><text x="${i*30+15}" y="106" font-size="9" text-anchor="middle" style="fill:var(--mute)">${i*10}%</text>${c?`<text x="${i*30+15}" y="${87-h}" font-size="10" font-weight="700" text-anchor="middle" style="fill:var(--ink)">${c}</text>`:''}`}).join('')}</svg></div>
  <div class="card"><h3>Test map</h3><span class="mute">${R.c.keep} keep, ${R.c.revise} revise, ${R.c.discard} discard</span>
  <div class="imap">${R.items.map(x=>`<i class="${x.d}" style="--i:${x.q}">${x.q}</i>`).join('')}</div></div>
  <h3 style="margin-top:20px">Items, most urgent first</h3>`+
  [...R.items].sort((a,b)=>order[a.d]-order[b.d]||a.D-b.D).map(x=>`<details class="q"><summary>Q${x.q}<span class="tag ${x.d}">${tag[x.d]}</span><span class="bar"><i style="width:${Math.round(x.p*100)}%"></i></span><span class="mute">${Math.round(x.p*100)}% | D ${x.D.toFixed(2)}</span></summary>
-  ${x.why.length?`<p class="mute">${x.why.join(' ')}</p>`:'<p class="mute">Healthy item: it separates stronger from weaker students and every option is working.</p>'}
-  ${['A','B','C','D'].map(l=>`<div class="dr"><b>${l}</b><span class="bar ${l==x.key?'k':''}"><i style="width:${x.cnt[l]/R.N*100}%"></i></span><span>${x.cnt[l]}${l==x.key?' (key)':''}</span></div>`).join('')}
+  <p class="mute">${x.pl} item (${Math.round(x.p*100)}% correct). Discrimination: ${x.dl} (D ${x.D.toFixed(2)}, point-biserial ${x.pb.toFixed(2)}).</p><p><b>What to do:</b> ${x.fb}</p>${x.why.length?`<p class="mute">${x.why.join(' ')}</p>`:''}
+  ${['A','B','C','D'].map(l=>`<div class="dr"><b>${l}</b><span class="bar ${l==x.key?'k':''}"><i style="width:${x.cnt[l]/R.N*100}%"></i></span><span>${x.cnt[l]}${l==x.key?' (key)':''} <span class="mute" style="font-size:12px">top ${x.opt[l].u}, bottom ${x.opt[l].l}</span></span></div>`).join('')}
   ${x.cnt['']?`<p class="mute">Left blank: ${x.cnt['']}</p>`:''}</details>`).join('')+
  `<div class="row"><button class="btn" data-act="exportItems" data-id="${e.id}">Download analysis for Excel</button></div>
  <details class="q"><summary>How items are judged</summary><p class="mute"><b>Difficulty</b> is the share of students who got the item right. <b>Discrimination (D)</b> is how much more often the top 27% of scorers got it right than the bottom 27%. <b>Keep:</b> D of 0.20 or more, with 25% to 85% correct. <b>Revise:</b> weak D, too hard or too easy, or two or more unused options. <b>Discard:</b> negative D, or the top scorers prefer a wrong option. <b>KR-20</b> shows how consistently the whole test measures students; 0.70 or higher is good.</p></details>`;
@@ -978,7 +1021,7 @@ V.settings=async()=>{
  <p class="mute">Already connected? After pasting the new script, choose Deploy, Manage deployments, edit, and pick New version. Internet is only needed for setup and sending. Scanning always works offline. For Excel, open the sheet and choose File, Download, Microsoft Excel (.xlsx).</p></div>
  <div class="card"><h3>Erase everything</h3><p class="mute">Deletes all classes, exams, and checked papers stored on this phone.</p>
  <button class="btn ghost del" data-act="wipe">Erase all data</button></div>
- <p class="mute">TSEKmate v1.7, Tsekie and the turtle</p>`;
+ <p class="mute">TSEKmate v1.8, sharper scans and feedback</p>`;
 };
 
 /* ===== Teacher accounts (saved on this phone; passwords are salted + hashed with PBKDF2) ===== */
@@ -1174,7 +1217,8 @@ const A={
  async toggleJoin(b){const c=(await db.all('classes')).find(x=>x.id==b.dataset.id);c.open=c.open?0:1;await db.put('classes',c);toast(c.open?'Joining is open.':'Joining is closed.');render()},
  async newCode(b){if(!confirm('Make a new code? The old code and link will stop working.'))return;const c=(await db.all('classes')).find(x=>x.id==b.dataset.id);c.code=await newCode();c.open=1;await db.put('classes',c);toast('New code: '+c.code);render()},
  camOn(){cam.on()},
- snap(){if(cam.s)process(cam.frame(1280))},
+ async snap(){if(!cam.s)return;const fr=[];for(let i=0;i<3;i++){fr.push(cam.frame(1280));if(i<2)await new Promise(r=>setTimeout(r,70))}
+  process(fr.map(f=>[SCAN.sharp(f),f]).sort((a,b)=>b[0]-a[0])[0][1])},
  fix(b){const i=+b.dataset.q;scn.ans[i]=b.dataset.v;scn.ok.add(i);showRev()},
  discard(){scn=null;$('#rev').innerHTML='';if(cam.s)cam.loop()},
  async saveScan(){const st=$('#stu').value;if(!st)return toast('Choose the student first.');
@@ -1185,8 +1229,8 @@ const A={
   const ex=(await db.all('exams')).find(x=>x.id==b.dataset.id),pp=(await db.all('sheets')).filter(x=>x.examId==ex.id),R=ITEM.analyze(ex.key,pp.map(x=>x.answers));
   if(!R)return toast('Scan at least 2 papers first.');
   download(ex.title+' item analysis',[[ex.title],['Papers',R.N,'Average %',Math.round(R.mean/R.n*100),'KR-20',R.kr20==null?'':R.kr20.toFixed(3)],[],
-   ['Item','Key','Difficulty (p)','Discrimination (D)','A','B','C','D','Blank','Decision','Notes'],
-   ...R.items.map(x=>[x.q,x.key,x.p.toFixed(3),x.D.toFixed(3),x.cnt.A,x.cnt.B,x.cnt.C,x.cnt.D,x.cnt[''],x.d,x.why.join(' ')])]);
+   ['Item','Key','Difficulty (p)','Discrimination (D)','A','B','C','D','Blank','Decision','Notes','Difficulty level','Discrimination level','Point-biserial','What to do'],
+   ...R.items.map(x=>[x.q,x.key,x.p.toFixed(3),x.D.toFixed(3),x.cnt.A,x.cnt.B,x.cnt.C,x.cnt.D,x.cnt[''],x.d,x.why.join(' '),x.pl,x.dl,x.pb.toFixed(3),x.fb])]);
   toast('Item analysis downloaded.');
  },
  stTab(b){st.tab=b.dataset.t;render()},
